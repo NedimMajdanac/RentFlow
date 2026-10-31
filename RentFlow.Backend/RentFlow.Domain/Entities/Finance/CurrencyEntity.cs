@@ -1,6 +1,6 @@
 ﻿using RentFlow.Domain.Common;
 
-namespace Market.Domain.Entities.Finance;
+namespace RentFlow.Domain.Entities.Finance;
 
 /// <summary>
 /// Represents a currency (ISO 4217) that prices can be converted to.

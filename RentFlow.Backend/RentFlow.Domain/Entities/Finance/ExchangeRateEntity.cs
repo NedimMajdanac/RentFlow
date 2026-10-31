@@ -1,6 +1,6 @@
 ﻿using RentFlow.Domain.Common;
 
-namespace Market.Domain.Entities.Finance;
+namespace RentFlow.Domain.Entities.Finance;
 
 /// <summary>
 /// Exchange rate of one currency to the base currency (BAM), valid from <see cref="ValidFromUtc"/>
