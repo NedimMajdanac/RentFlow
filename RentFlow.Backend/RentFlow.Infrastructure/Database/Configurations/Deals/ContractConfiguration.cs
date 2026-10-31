@@ -16,7 +16,6 @@ public class ContractConfiguration : IEntityTypeConfiguration<ContractEntity>
         b.Property(x => x.ContractType).HasConversion<string>().HasMaxLength(20);
         b.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
 
-        // 1:0..1 - jedan zahtjev, najviše jedan ugovor
         b.HasOne(x => x.Request).WithOne()
             .HasForeignKey<ContractEntity>(x => x.RequestId).OnDelete(DeleteBehavior.Restrict);
         b.HasIndex(x => x.RequestId).IsUnique();

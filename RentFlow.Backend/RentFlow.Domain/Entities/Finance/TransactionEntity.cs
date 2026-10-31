@@ -19,19 +19,19 @@ public class TransactionEntity : BaseEntity
     public int RecordedById { get; set; }
     public UserEntity RecordedBy { get; set; } = null!;
 
-    // iznos i valuta iz ugovora/rate
+    // amount and currency in which the transaction was recorded (i.e. the amount that was actually paid)
     public decimal OriginalAmount { get; set; }
     public int OriginalCurrencyId { get; set; }
     public CurrencyEntity OriginalCurrency { get; set; } = null!;
 
-    // iznos i valuta u kojoj je stvarno plaćeno
+    // amount and currency in which the transaction was actually paid
     public decimal PaidAmount { get; set; }
     public int PaidCurrencyId { get; set; }
     public CurrencyEntity PaidCurrency { get; set; } = null!;
 
-    public int? ExchangeRateId { get; set; }          // null ako su valute iste
+    public int? ExchangeRateId { get; set; }          // null if currencies are the same
     public ExchangeRateEntity? ExchangeRate { get; set; }
-    public decimal AppliedRate { get; set; } = 1m;    // 1 ako su valute iste
+    public decimal AppliedRate { get; set; } = 1m;    // 1 if currencies are the same, otherwise the rate that was applied to convert from OriginalCurrency to PaidCurrency
 
     public TransactionStatus Status { get; set; } = TransactionStatus.Pending;
     public DateTime? ExecutedAtUtc { get; set; }

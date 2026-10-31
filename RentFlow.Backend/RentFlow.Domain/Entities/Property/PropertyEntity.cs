@@ -21,7 +21,7 @@ public class PropertyEntity : BaseEntity
     public decimal? PlotAreaM2 { get; set; }
     public int? Rooms { get; set; }
     public int? Bathrooms { get; set; }
-    public int? Floor { get; set; }          // 0 = prizemlje, -1 = suteren
+    public int? Floor { get; set; }          
     public int? TotalFloors { get; set; }
     public int? YearBuilt { get; set; }
 

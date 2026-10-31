@@ -18,7 +18,7 @@ namespace RentFlow.Infrastructure.Database.Seeders;
 /// </summary>
 public sealed class DynamicDataSeeder(DatabaseContext db, IPasswordHasher<UserEntity> passwordHasher)
 {
-    private const decimal EurToBam = 1.95583m;   // fiksni kurs KM prema EUR (currency board)
+    private const decimal EurToBam = 1.95583m;   
 
     public async Task SeedAsync(CancellationToken ct = default)
     {

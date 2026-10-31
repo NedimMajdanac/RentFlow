@@ -11,7 +11,7 @@ public class PropertyImageConfiguration : IEntityTypeConfiguration<PropertyImage
         b.ToTable("PropertyImages");
         b.Property(x => x.Url).HasMaxLength(500).IsRequired();
 
-        // jedini cascade u modelu
+        
         b.HasOne(x => x.Property).WithMany(p => p.Images)
             .HasForeignKey(x => x.PropertyId).OnDelete(DeleteBehavior.Cascade);
     }

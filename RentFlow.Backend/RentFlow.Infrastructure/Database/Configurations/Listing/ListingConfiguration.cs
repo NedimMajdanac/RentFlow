@@ -21,12 +21,12 @@ public class ListingConfiguration : IEntityTypeConfiguration<ListingEntity>
         b.HasOne(x => x.Currency).WithMany()
             .HasForeignKey(x => x.CurrencyId).OnDelete(DeleteBehavior.Restrict);
 
-        // samo jedan aktivan (neobrisan) oglas po nekretnini
+        // one-to-one relationship with Property, only one active listing per property  
         b.HasIndex(x => x.PropertyId)
             .IsUnique()
             .HasFilter("[Status] = 'Active' AND [IsDeleted] = 0");
 
-        // pretraga oglasa
+        // search index 
         b.HasIndex(x => new { x.Status, x.ListingType });
     }
 }

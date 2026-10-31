@@ -19,9 +19,9 @@ public class ContractEntity : BaseEntity
     public UserEntity BuyerOrTenant { get; set; } = null!;
 
     public DateOnly StartDate { get; set; }
-    public DateOnly? EndDate { get; set; }            // null za prodaju
+    public DateOnly? EndDate { get; set; }            // null for open-ended contracts (e.g. indefinite rental agreements)
 
-    public decimal Amount { get; set; }               // najamnina ili cijena
+    public decimal Amount { get; set; }               // price or rent amount, depending on the contract type
     public int CurrencyId { get; set; }
     public CurrencyEntity Currency { get; set; } = null!;
 
