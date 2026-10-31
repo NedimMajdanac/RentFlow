@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-namespace Market.Shared.Constants;
+namespace RentFlow.Shared.Constants;
 
 /// <summary>
 /// Environments of the starter, next to the built-in Development and Production (<see cref="Environments"/>):

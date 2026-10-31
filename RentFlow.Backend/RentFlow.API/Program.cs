@@ -2,6 +2,7 @@ using Serilog;
 using RentFlow.API;
 using RentFlow.API.Middleware;
 using RentFlow.Application;
+using RentFlow.Infrastructure;
 
 
 public partial class Program
@@ -19,7 +20,7 @@ public partial class Program
 
         try
         {
-            Log.Information("Starting Market API...");
+            Log.Information("Starting RentFlow API...");
 
             //
             // 1) Standard builder (includes appsettings.json, appsettings.{ENV}.json,
@@ -53,7 +54,7 @@ public partial class Program
             // 3. Layer registrations
             // ---------------------------------------------------------
             builder.Services
-                .AddApi(builder.Configuration, builder.Environment)
+                .AddAPI(builder.Configuration, builder.Environment)
                 .AddInfrastructure(builder.Configuration, builder.Environment)
                 .AddApplication();
 
@@ -91,7 +92,7 @@ public partial class Program
 
             // Request logging is the outermost middleware, so it also measures the exception handler
             // and logs the final status code (e.g. 404/409/500 set by MarketExceptionHandler).
-            app.UseMiddleware<Requestr>();
+            app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
             // Global exception handler (IExceptionHandler)
             app.UseExceptionHandler();
@@ -120,7 +121,7 @@ public partial class Program
             // Database migrations + seeding
             await app.Services.InitializeDatabaseAsync(app.Environment);
 
-            Log.Information("Market API started successfully.");
+            Log.Information("RentFlow API started successfully.");
             app.Run();
         }
         catch (HostAbortedException)
@@ -132,7 +133,7 @@ public partial class Program
         catch (Exception ex)
         {
             // Any startup failure will be logged here
-            Log.Fatal(ex, "Market API terminated unexpectedly.");
+            Log.Fatal(ex, "RentFlow API terminated unexpectedly.");
         }
         finally
         {

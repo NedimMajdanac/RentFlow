@@ -1,5 +1,6 @@
 ﻿using RentFlow.Application.Abstractions;
 using RentFlow.Application.Common;
+using RentFlow.Application.Common.Exceptions;
 
 namespace RentFlow.Infrastructure.Common;
 
@@ -60,7 +61,7 @@ public sealed class CurrencyConverter(IAppDbContext db, TimeProvider timeProvide
             .FirstOrDefaultAsync(ct);
 
         if (currency is null)
-            throw new MarketNotFoundException($"Valuta {normalizedCode} nije pronađena ili nije omogućena.");
+            throw new NotFoundException($"Valuta {normalizedCode} nije pronađena ili nije omogućena.");
 
         if (currency.IsBase)
             return new CurrencyRate(currency.Code, currency.DecimalPlaces, 1m, null);
@@ -75,7 +76,7 @@ public sealed class CurrencyConverter(IAppDbContext db, TimeProvider timeProvide
             .FirstOrDefaultAsync(ct);
 
         if (rate is null)
-            throw new MarketBusinessRuleException("currency.rate.notFound",
+            throw new BusinessRuleException("currency.rate.notFound",
                 $"Za valutu {currency.Code} ne postoji kurs koji važi na dan {atUtc:dd.MM.yyyy.}");
 
         return new CurrencyRate(currency.Code, currency.DecimalPlaces, rate.RateToBase, rate.ValidFromUtc);

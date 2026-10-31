@@ -4,7 +4,6 @@ using RentFlow.Domain.Entities.Finance;
 using RentFlow.Shared.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using RentFlow.Application.Abstractions;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -70,9 +69,9 @@ public sealed class FrankfurterExchangeRateProvider(
         return new ExchangeRatesSnapshot(SourceName, validFromUtc, ratesToBase);
     }
 
-    private static MarketBusinessRuleException Unavailable(Exception? innerException)
+    private static BusinessRuleException Unavailable(Exception? innerException)
     {
-        return new MarketBusinessRuleException("exchangeRates.provider.unavailable",
+        return new BusinessRuleException("exchangeRates.provider.unavailable",
             "Kursna lista nije preuzeta jer servis Frankfurter trenutno nije dostupan. Pokušajte ponovo kasnije.",
             innerException);
     }
