@@ -1,10 +1,10 @@
-﻿using Market.Infrastructure.Database;
-using Market.Infrastructure.Database.Seeders;
-using Market.Shared.Constants;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RentFlow.Infrastructure.Database;
+using RentFlow.Infrastructure.Database.Seeders;
+using RentFlow.Shared.Constants;
 
-namespace Market.Infrastructure;
+namespace RentFlow.Infrastructure;
 
 public static class DatabaseInitializer
 {
@@ -15,12 +15,13 @@ public static class DatabaseInitializer
     {
         await using var scope = services.CreateAsyncScope();
         var ctx = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        var seeder = scope.ServiceProvider.GetRequiredService<DynamicDataSeeder>();
 
         if (env.IsIntegrationTests())
         {
             // In-memory database: no migrations, the schema is created from the model
             await ctx.Database.EnsureCreatedAsync();
-            await DynamicDataSeeder.SeedAsync(ctx);
+            await seeder.SeedAsync();
             return;
         }
 
@@ -30,7 +31,7 @@ public static class DatabaseInitializer
         // Demo data (the accounts from README) in Development and Testing, never in Production
         if (env.IsDevelopment() || env.IsTesting())
         {
-            await DynamicDataSeeder.SeedAsync(ctx);
+            await seeder.SeedAsync();
         }
     }
 }

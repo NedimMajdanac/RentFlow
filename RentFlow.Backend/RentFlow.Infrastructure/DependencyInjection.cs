@@ -1,6 +1,7 @@
 ﻿using RentFlow.Application.Abstractions;
 using RentFlow.Infrastructure.Common;
 using RentFlow.Infrastructure.Database;
+using RentFlow.Infrastructure.Database.Seeders;
 using RentFlow.Shared.Constants;
 using RentFlow.Shared.Options;
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Market.Shared.Constants;
+using RentFlow.Domain.Entities.Identity;
 
 namespace RentFlow.Infrastructure;
 
@@ -41,9 +42,10 @@ public static class DependencyInjection
 
         // IAppDbContext mapping
         services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<DatabaseContext>());
+        services.AddScoped<DynamicDataSeeder>();
 
         // Identity hasher
-        services.AddScoped<IPasswordHasher<MarketUserEntity>, PasswordHasher<MarketUserEntity>>();
+        services.AddScoped<IPasswordHasher<UserEntity>, PasswordHasher<UserEntity>>();
 
         // Token service (reads JwtOptions via IOptions<JwtOptions>)
         services.AddTransient<IJwtTokenService, JwtTokenService>();

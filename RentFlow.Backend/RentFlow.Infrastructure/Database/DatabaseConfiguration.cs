@@ -1,12 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RentFlow.Domain.Common;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using RentFlow.Infrastructure.Database.Seeders;
 
-namespace Market.Infrastructure.Database;
+namespace RentFlow.Infrastructure.Database;
 
-public partial class DatabaseContext
+public partial class DatabaseContext : DbContext
 {
-    private DateTime UtcNow => _clock.GetUtcNow().UtcDateTime;
+    private DateTime UtcNow => DateTime.UtcNow;
 
     private void ApplyAuditAndSoftDelete()
     {
@@ -57,12 +60,11 @@ public partial class DatabaseContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // učitaj sve konfiguracije iz Infrastructure.Database.Configurations
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
 
         ApplyGlobalFielters(modelBuilder);
 
-        //StaticDataSeeder.Seed(modelBuilder); // static data
+        StaticDataSeeder.Seed(modelBuilder);
     }
 
     private void ApplyGlobalFielters(ModelBuilder modelBuilder)
