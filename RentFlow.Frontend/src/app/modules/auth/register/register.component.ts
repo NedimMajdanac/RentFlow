@@ -47,7 +47,7 @@ export class RegisterComponent {
         [
           Validators.required,
           Validators.minLength(8),
-          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/), // najmanje jedno slovo i jedna cifra
+          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/), // at least one char and one number
         ],
       ],
       confirmPassword: ['', [Validators.required]],
@@ -56,7 +56,7 @@ export class RegisterComponent {
     { validators: passwordsMatch },
   );
 
-  /** Prikaz greške tek nakon što je polje diraniti ili je forma poslana. */
+  
   invalid(name: 'fullName' | 'email' | 'password' | 'confirmPassword' | 'acceptTerms'): boolean {
     const c = this.form.controls[name];
     return c.invalid && (c.touched || c.dirty);
@@ -79,13 +79,12 @@ export class RegisterComponent {
     const [firstname, ...rest] = fullName.trim().split(/\s+/);
     const lastname = rest.join(' ');
 
-    this.submitting.set(true);
-
-    // TODO: uskladi potpis sa tvojim AuthService-om (endpoint: POST /api/auth/register)
+      this.submitting.set(true);
+      
     this.auth.register({ firstname, lastname, email, password }).subscribe({
       next: () => {
         this.submitting.set(false);
-        this.router.navigateByUrl('/'); // korisnik je odmah prijavljen
+        this.router.navigateByUrl('/'); 
       },
       error: (err: HttpErrorResponse) => {
         this.submitting.set(false);
@@ -99,6 +98,6 @@ export class RegisterComponent {
   }
 
   signInWithGoogle(): void {
-    // Backend trenutno ne podržava Google prijavu; dugme je samo dio dizajna.
+    // backend doesnt support google sign in - design only
   }
 }

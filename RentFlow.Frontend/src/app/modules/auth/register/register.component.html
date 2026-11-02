@@ -1,5 +1,5 @@
 <div class="auth">
-  <!-- LIJEVA STRANA -->
+  <!-- left side -->
   <aside class="auth__aside">
     <div class="brand">
       <span class="brand__logo">R</span>
@@ -21,7 +21,7 @@
     <span class="aside__circle"></span>
   </aside>
 
-  <!-- DESNA STRANA -->
+  <!-- right side -->
   <main class="auth__main">
     <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <span class="form__eyebrow">NOVI RENTFLOW RAČUN</span>
@@ -32,7 +32,7 @@
         <div class="alert" role="alert">{{ serverError() }}</div>
       }
 
-      <!-- Ime i prezime -->
+      <!-- name and last name -->
       <div class="field">
         <label for="fullName">Ime i prezime</label>
         <input id="fullName" type="text" formControlName="fullName"
@@ -54,7 +54,7 @@
         }
       </div>
 
-      <!-- Lozinka -->
+      <!-- password -->
       <div class="field">
         <label for="password">Lozinka</label>
         <div class="input-wrap">
@@ -76,7 +76,7 @@
         }
       </div>
 
-      <!-- Potvrda lozinke -->
+      <!-- password repeat -->
       <div class="field">
         <label for="confirmPassword">Potvrdite lozinku</label>
         <div class="input-wrap">
@@ -99,7 +99,7 @@
         }
       </div>
 
-      <!-- Uslovi -->
+      <!-- terms -->
       <label class="check">
         <input type="checkbox" formControlName="acceptTerms" />
         <span>Prihvatam uslove korištenja i politiku privatnosti.</span>
