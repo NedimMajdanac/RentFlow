@@ -1,0 +1,130 @@
+<div class="auth">
+  <!-- LIJEVA STRANA -->
+  <aside class="auth__aside">
+    <div class="brand">
+      <span class="brand__logo">R</span>
+      <span class="brand__name">RentFlow</span>
+    </div>
+
+    <div class="aside__body">
+      <h1>Upravljanje najmom počinje ovdje.</h1>
+      <p>Kreirajte RentFlow račun i organizujte nekretnine, ugovore i uplate na jednom mjestu.</p>
+
+      <div class="aside__image">
+        <strong>PROSTOR ZA SLIKU</strong>
+        <span>Zgrada ili nekretnina iz Bosne i Hercegovine</span>
+      </div>
+    </div>
+
+    <div class="aside__tagline">Jednostavno. Pregledno. Na jednom mjestu.</div>
+    <div class="aside__footer">RentFlow · Bosna i Hercegovina</div>
+    <span class="aside__circle"></span>
+  </aside>
+
+  <!-- DESNA STRANA -->
+  <main class="auth__main">
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <span class="form__eyebrow">NOVI RENTFLOW RAČUN</span>
+      <h2 class="form__title">Kreirajte račun</h2>
+      <p class="form__subtitle">Unesite podatke da biste započeli.</p>
+
+      @if (serverError()) {
+        <div class="alert" role="alert">{{ serverError() }}</div>
+      }
+
+      <!-- Ime i prezime -->
+      <div class="field">
+        <label for="fullName">Ime i prezime</label>
+        <input id="fullName" type="text" formControlName="fullName"
+               placeholder="Vaše ime i prezime" autocomplete="name"
+               [class.is-invalid]="invalid('fullName')" />
+        @if (invalid('fullName')) {
+          <small class="error">Unesite ime i prezime.</small>
+        }
+      </div>
+
+      <!-- Email -->
+      <div class="field">
+        <label for="email">Email adresa</label>
+        <input id="email" type="email" formControlName="email"
+               placeholder="ime@primjer.ba" autocomplete="email"
+               [class.is-invalid]="invalid('email')" />
+        @if (invalid('email')) {
+          <small class="error">Unesite ispravnu email adresu.</small>
+        }
+      </div>
+
+      <!-- Lozinka -->
+      <div class="field">
+        <label for="password">Lozinka</label>
+        <div class="input-wrap">
+          <input id="password" [type]="showPassword() ? 'text' : 'password'"
+                 formControlName="password" placeholder="Unesite lozinku"
+                 autocomplete="new-password" [class.is-invalid]="invalid('password')" />
+          <button type="button" class="eye" (click)="showPassword.set(!showPassword())"
+                  [attr.aria-label]="showPassword() ? 'Sakrij lozinku' : 'Prikaži lozinku'">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+              <circle cx="12" cy="12" r="3" />
+              @if (!showPassword()) { <line x1="3" y1="3" x2="21" y2="21" /> }
+            </svg>
+          </button>
+        </div>
+        @if (invalid('password')) {
+          <small class="error">Najmanje 8 znakova, uz bar jedno slovo i jednu cifru.</small>
+        }
+      </div>
+
+      <!-- Potvrda lozinke -->
+      <div class="field">
+        <label for="confirmPassword">Potvrdite lozinku</label>
+        <div class="input-wrap">
+          <input id="confirmPassword" [type]="showConfirm() ? 'text' : 'password'"
+                 formControlName="confirmPassword" placeholder="Ponovo unesite lozinku"
+                 autocomplete="new-password"
+                 [class.is-invalid]="invalid('confirmPassword') || mismatch" />
+          <button type="button" class="eye" (click)="showConfirm.set(!showConfirm())"
+                  [attr.aria-label]="showConfirm() ? 'Sakrij lozinku' : 'Prikaži lozinku'">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+              <circle cx="12" cy="12" r="3" />
+              @if (!showConfirm()) { <line x1="3" y1="3" x2="21" y2="21" /> }
+            </svg>
+          </button>
+        </div>
+        @if (mismatch) {
+          <small class="error">Lozinke se ne poklapaju.</small>
+        }
+      </div>
+
+      <!-- Uslovi -->
+      <label class="check">
+        <input type="checkbox" formControlName="acceptTerms" />
+        <span>Prihvatam uslove korištenja i politiku privatnosti.</span>
+      </label>
+      @if (invalid('acceptTerms')) {
+        <small class="error">Morate prihvatiti uslove korištenja.</small>
+      }
+
+      <button type="submit" class="btn btn--primary" [disabled]="submitting()">
+        {{ submitting() ? 'Kreiranje...' : 'Kreiraj račun' }}
+      </button>
+
+      <div class="divider"><span>ili</span></div>
+
+      <button type="button" class="btn btn--outline" (click)="signInWithGoogle()">
+        <span class="g-badge">G</span>
+        Nastavite s Googleom
+      </button>
+
+      <p class="form__switch">
+        Već imate račun?
+        <a routerLink="/login">Prijavite se</a>
+      </p>
+    </form>
+
+    <p class="secure">Zaštićen pristup vašim podacima i evidenciji.</p>
+  </main>
+</div>
