@@ -50,7 +50,11 @@
                placeholder="ime@primjer.ba" autocomplete="email"
                [class.is-invalid]="invalid('email')" />
         @if (invalid('email')) {
-          <small class="error">Unesite ispravnu email adresu.</small>
+          @if (form.controls.email.errors?.['server']) {
+            <small class="error">{{ form.controls.email.errors?.['server'] }}</small>
+          } @else {
+            <small class="error">Unesite ispravnu email adresu.</small>
+          }
         }
       </div>
 

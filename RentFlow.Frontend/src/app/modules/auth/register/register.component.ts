@@ -9,6 +9,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthApiService } from '../../../api-services/auth-api.service';
+import { extractFieldErrors } from '../../../core/http/api-error';
 
 function fullNameValidator(control: AbstractControl): ValidationErrors | null {
   const parts = String(control.value ?? '').trim().split(/\s+/).filter(Boolean);
@@ -84,15 +85,36 @@ export class RegisterComponent {
     this.auth.register({ firstname, lastname, email, password }).subscribe({
       next: () => {
         this.submitting.set(false);
-        this.router.navigateByUrl('/'); 
+        this.router.navigateByUrl('/');
       },
       error: (err: HttpErrorResponse) => {
         this.submitting.set(false);
-        this.serverError.set(
-          err.status === 400 || err.status === 409
-            ? 'Registracija nije uspjela. Provjerite podatke (email možda već postoji).'
-            : 'Došlo je do greške. Pokušajte ponovo.',
-        );
+
+        const fieldErrors = extractFieldErrors(err);
+        let handled = false;
+
+        for (const [field, messages] of Object.entries(fieldErrors)) {
+          const control = this.form.get(field);
+          if (control) {
+            control.setErrors({ server: messages[0] });
+            control.markAsTouched();
+            handled = true;
+          }
+        }
+
+        if (!handled) {
+          // 409 without detail
+          if (err.status === 409) {
+            this.form.controls.email.setErrors({ server: 'Račun s ovom email adresom već postoji.' });
+            this.form.controls.email.markAsTouched();
+          } else {
+            this.serverError.set(
+              err.status === 0
+                ? 'Server nije dostupan. Provjerite vezu i pokušajte ponovo.'
+                : 'Došlo je do greške. Pokušajte ponovo.',
+            );
+          }
+        }
       },
     });
   }
