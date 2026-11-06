@@ -43,8 +43,6 @@ export class LoginComponent {
     const { email, password } = this.form.getRawValue();
     this.submitting.set(true);
 
-    // TODO: uskladi potpis sa tvojim AuthService-om (POST /api/auth/login).
-    // Servis treba sačuvati tokene; "rememberMe" se ne šalje backendu.
     this.auth.login({ email: email.trim().toLowerCase(), password }).subscribe({
       next: () => {
         this.submitting.set(false);
@@ -60,7 +58,7 @@ export class LoginComponent {
   }
 
   signInWithGoogle(): void {
-    // Backend nema Google prijavu; dugme je samo dio dizajna.
+    // Backend has no Google login; button is just for design
   }
 
   private toMessage(err: HttpErrorResponse): string {
@@ -69,7 +67,7 @@ export class LoginComponent {
         return 'Server nije dostupan. Provjerite vezu i pokušajte ponovo.';
       case 400:
       case 401:
-        // namjerno ista poruka za pogrešan email i pogrešnu lozinku
+        
         return 'Pogrešan email ili lozinka.';
       case 403:
         return 'Vaš račun je onemogućen. Obratite se administratoru.';
@@ -80,7 +78,6 @@ export class LoginComponent {
     }
   }
 
-  /** Dozvoljava samo interne putanje (zaštita od open redirecta). */
   private safeReturnUrl(): string {
     const url = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
     return url.startsWith('/') && !url.startsWith('//') ? url : '/';
