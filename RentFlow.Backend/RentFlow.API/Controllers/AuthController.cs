@@ -1,7 +1,7 @@
 ﻿//using RentFlow.API.Modules.Auth.Commands.ChangePassword;
 //using RentFlow.Application.Modules.Auth.Commands.ForgotPassword;
-//using RentFlow.Application.Modules.Auth.Commands.Login;
-//using RentFlow.Application.Modules.Auth.Commands.Logout;
+using RentFlow.Application.Modules.Auth.Commands.Login;
+using RentFlow.Application.Modules.Auth.Commands.Logout;
 //using RentFlow.Application.Modules.Auth.Commands.Refresh;
 using RentFlow.Application.Modules.Auth.Commands.Register;
 //using RentFlow.Application.Modules.Auth.Commands.ResetPassword;
@@ -19,15 +19,15 @@ public sealed class AuthController(IMediator mediator) : ControllerBase
     /// Login with email and password. Wrong email, wrong password and a disabled account
     /// all return the same 401 response.
     /// </summary>
-    //[HttpPost("login")]
-    //[AllowAnonymous]
-    //[ProducesResponseType(typeof(LoginCommandDto), StatusCodes.Status200OK)]
-    //[ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    //[ProducesResponseType(typeof(ErrorDto), StatusCodes.Status401Unauthorized)]
-    //public async Task<ActionResult<LoginCommandDto>> Login([FromBody] LoginCommand command, CancellationToken ct)
-    //{
-    //    return Ok(await mediator.Send(command, ct));
-    //}
+    [HttpPost("login")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(LoginCommandDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<LoginCommandDto>> Login([FromBody] LoginCommand command, CancellationToken ct)
+    {
+        return Ok(await mediator.Send(command, ct));
+    }
 
     /// <summary>
     /// Exchanges a refresh token for a new access/refresh pair (the old refresh token is revoked).
@@ -46,13 +46,13 @@ public sealed class AuthController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Revokes the refresh token (idempotent).
     /// </summary>
-    //[AllowAnonymous]
-    //[HttpPost("logout")]
-    //[ProducesResponseType(StatusCodes.Status204NoContent)]
-    //public async Task Logout([FromBody] LogoutCommand command, CancellationToken ct)
-    //{
-    //    await mediator.Send(command, ct);
-    //}
+    [AllowAnonymous]
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task Logout([FromBody] LogoutCommand command, CancellationToken ct)
+    {
+        await mediator.Send(command, ct);
+    }
 
     /// <summary>
     /// Registers a new customer account and logs it in (201 + tokens, same shape as login).
