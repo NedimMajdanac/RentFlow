@@ -1,0 +1,176 @@
+<header class="header">
+  <div class="container header__inner">
+    <a class="brand" routerLink="/">
+      <span class="brand__logo">R</span>
+      <span class="brand__name">RentFlow</span>
+    </a>
+
+    <nav class="nav" aria-label="Glavna navigacija">
+      <a href="#funkcionalnosti" (click)="scrollTo('funkcionalnosti', $event)">Funkcionalnosti</a>
+      <a href="#kako-funkcionise" (click)="scrollTo('kako-funkcionise', $event)">Kako funkcioniše</a>
+      <a href="#za-koga" (click)="scrollTo('za-koga', $event)">Za koga je</a>
+      <a href="#kontakt" (click)="scrollTo('kontakt', $event)">Kontakt</a>
+    </nav>
+
+    <div class="header__actions">
+      <a class="header__login" routerLink="/login">Prijava</a>
+      <a class="btn btn--primary btn--sm" routerLink="/register">Zatraži pristup</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <span class="pill">JEDNOSTAVNO UPRAVLJANJE NAJMOM</span>
+        <h1>
+          Upravljajte nekretninama
+          <span class="accent">bez nepotrebne papirologije.</span>
+        </h1>
+        <p>
+          Nekretnine, najmovi, ugovori i evidencija uplata — organizovani na jednom mjestu.
+          RentFlow vam pomaže da svakodnevne obaveze vodite jednostavnije i preglednije.
+        </p>
+        <div class="hero__buttons">
+          <a class="btn btn--primary" routerLink="/register">Započnite s RentFlowom</a>
+          <a class="btn btn--light" href="#funkcionalnosti" (click)="scrollTo('funkcionalnosti', $event)">
+            Pogledajte funkcionalnosti
+          </a>
+        </div>
+        <small class="hero__note">Jasna evidencija • Manje ručnog posla • Više kontrole</small>
+      </div>
+
+      <div class="hero__media img-hero">
+        <div class="hero__card">
+          <strong>Sve informacije na jednom mjestu.</strong>
+          <span>Nekretnine · Najmovi · Ugovori · Uplate</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="intro">
+    <div class="container">
+      <span class="eyebrow">NAPRAVLJENO ZA JEDNOSTAVNO UPRAVLJANJE</span>
+      <h2>Sve što vam treba. Bez rasutih evidencija.</h2>
+      <p>Jedan pregled za nekretnine, aktivne najmove, dokumente i plaćanja.</p>
+    </div>
+  </section>
+
+  <section class="intro intro--tinted" id="kako-funkcionise">
+    <div class="container">
+      <span class="eyebrow">JEDNA PLATFORMA. CIJELI PROCES.</span>
+      <h2>Od prvog oglasa do uredne evidencije.</h2>
+      <p>Povežite korake koji inače završavaju u različitim dokumentima, porukama i tabelama.</p>
+    </div>
+  </section>
+
+  <div id="funkcionalnosti">
+    @for (f of features; track f.number) {
+      <section class="feature" [class.feature--tinted]="f.reverse">
+        <div class="container feature__inner" [class.feature__inner--reverse]="f.reverse">
+          <div class="feature__text">
+            <span class="eyebrow">{{ f.number }} | {{ f.label }}</span>
+            <h2>{{ f.title[0] }}<br />{{ f.title[1] }}</h2>
+            <p>{{ f.text }}</p>
+            <ul class="checks">
+              @for (c of f.checks; track c) {
+                <li>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                       stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12l5 5 9-10" />
+                  </svg>
+                  {{ c }}
+                </li>
+              }
+            </ul>
+          </div>
+
+          <div class="feature__media" [class]="'feature__media media--' + f.media">
+            @if (f.media === 'payments') {
+              <div class="placeholder">
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+    }
+  </div>
+
+  <section class="audience" id="za-koga">
+    <div class="container audience__inner">
+      <div class="audience__text">
+        <span class="eyebrow eyebrow--light">ZA VLASNIKE NEKRETNINA U BIH</span>
+        <h2>Od stana u gradu do vikendice na planini.</h2>
+        <p>
+          Bilo da izdajete stan u Sarajevu, apartman u Mostaru ili kuću za odmor na Vlašiću,
+          RentFlow vam daje pregled nad najmom i obavezama.
+        </p>
+      </div>
+      <div class="audience__images">
+        <div class="audience__img img-city"></div>
+        <div class="audience__img img-house"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="summary">
+    <div class="container">
+      <span class="eyebrow">MANJE HAOSA. VIŠE PREGLEDA.</span>
+      <h2>Vaše obaveze, konačno na jednom mjestu.</h2>
+      <p>
+        Pregled nekretnina, aktivnih najmova, ugovora i uplata — bez nepotrebnog prebacivanja
+        između evidencija.
+      </p>
+      <div class="pills">
+        @for (p of pills; track p) {
+          <span class="pill pill--outline">{{ p }}</span>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="cta">
+      <div class="cta__text">
+        <span class="eyebrow">UPOZNAJTE JEDNOSTAVNIJI NAJAM</span>
+        <h2>Uvedite više reda<br />u upravljanje nekretninama.</h2>
+        <p>RentFlow objedinjuje najvažnije informacije i korake vašeg procesa najma.</p>
+        <a class="btn btn--primary" routerLink="/register">Započnite s RentFlowom</a>
+      </div>
+      <div class="cta__media img-cta"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" id="kontakt">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" routerLink="/">
+          <span class="brand__logo">R</span>
+          <span class="brand__name">RentFlow</span>
+        </a>
+        <p class="footer__tagline">Pametnije upravljanje nekretninama i najmom.</p>
+      </div>
+
+      <div>
+        <h3>RENTFLOW</h3>
+        <a href="#funkcionalnosti" (click)="scrollTo('funkcionalnosti', $event)">Funkcionalnosti</a>
+        <a href="#kako-funkcionise" (click)="scrollTo('kako-funkcionise', $event)">Kako funkcioniše</a>
+        <a href="#kontakt" (click)="scrollTo('kontakt', $event)">Kontakt</a>
+      </div>
+
+      <div>
+        <h3>KONTAKT</h3>
+        <p>Imate pitanje o RentFlowu?<br />Javite nam se.</p>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© {{ year }} RentFlow. Sva prava zadržana.</span>
+      <span>Bosna i Hercegovina</span>
+    </div>
+  </div>
+</footer>
