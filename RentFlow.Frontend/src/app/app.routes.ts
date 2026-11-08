@@ -18,4 +18,9 @@ export const routes: Routes = [
     pathMatch: 'full',
     loadComponent: () => import('./modules/public/landing/landing.component').then(m => m.LandingComponent),
   },
+  {
+  path: 'profile',
+  canActivate: [myAuthGuard],
+  loadComponent: () => import('./modules/profile/profile.component').then(m => m.ProfileComponent),
+},
 ];
