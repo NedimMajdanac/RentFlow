@@ -84,7 +84,7 @@ export class LoginSuccessComponent implements OnInit, OnDestroy {
 
   continue(): void {
     clearTimeout(this.timer);
-    const url = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
-    this.router.navigateByUrl(url.startsWith('/') && !url.startsWith('//') ? url : '/');
+    const url = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/profile';
+    this.router.navigateByUrl(url.startsWith('/') && !url.startsWith('//') ? url : '/profile');
   }
 }

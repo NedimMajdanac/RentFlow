@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthApiService } from '../../../api-services/auth-api.service';
+import { AuthFacadeService } from '../../../core/services/auth-facade.service';
 import { extractFieldErrors } from '../../../core/http/api-error';
 
 function fullNameValidator(control: AbstractControl): ValidationErrors | null {
@@ -31,7 +31,7 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
 })
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly auth = inject(AuthApiService);
+  private readonly auth = inject(AuthFacadeService);
   private readonly router = inject(Router);
 
   readonly showPassword = signal(false);
@@ -85,7 +85,7 @@ export class RegisterComponent {
     this.auth.register({ firstname, lastname, email, password }).subscribe({
       next: () => {
         this.submitting.set(false);
-        this.router.navigateByUrl('/');
+        this.router.navigateByUrl('/profile');
       },
       error: (err: HttpErrorResponse) => {
         this.submitting.set(false);

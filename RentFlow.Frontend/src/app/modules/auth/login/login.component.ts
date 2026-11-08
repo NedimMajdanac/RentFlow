@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthApiService } from '../../../api-services/auth-api.service';
+import { AuthFacadeService } from '../../../core/services/auth-facade.service';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +13,7 @@ import { AuthApiService } from '../../../api-services/auth-api.service';
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly auth = inject(AuthApiService);
+  private readonly auth = inject(AuthFacadeService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -79,7 +79,7 @@ export class LoginComponent {
   }
 
   private safeReturnUrl(): string {
-    const url = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
-    return url.startsWith('/') && !url.startsWith('//') ? url : '/';
+    const url = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/profile';
+    return url.startsWith('/') && !url.startsWith('//') ? url : '/profile';
   }
 }
