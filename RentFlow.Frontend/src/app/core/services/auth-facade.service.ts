@@ -150,7 +150,7 @@ export class AuthFacadeService {
   redirectToLogin(): void {
     this.clearUserState();
     const returnUrl = this.router.url;
-    this.router.navigate(['/auth/login'], {
+    this.router.navigate(['/login'], {
       queryParams: isSafeReturnUrl(returnUrl) && returnUrl !== '/' ? { returnUrl } : {}
     });
   }
