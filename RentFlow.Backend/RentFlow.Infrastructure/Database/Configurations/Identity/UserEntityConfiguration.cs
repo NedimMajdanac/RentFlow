@@ -53,5 +53,10 @@ public sealed class UserEntityConfiguration : IEntityTypeConfiguration<UserEntit
         b.HasMany(x => x.RefreshTokens)
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId);
+
+        b.Property(x => x.Phone).HasMaxLength(UserEntity.Constraints.PhoneMaxLength);
+        b.Property(x => x.ProfileDescription).HasMaxLength(UserEntity.Constraints.ProfileDescriptionMaxLength);
+        b.Property(x => x.ProfileImageUrl).HasMaxLength(UserEntity.Constraints.ImageUrlMaxLength);
+        b.Property(x => x.CoverImageUrl).HasMaxLength(UserEntity.Constraints.ImageUrlMaxLength);
     }
 }

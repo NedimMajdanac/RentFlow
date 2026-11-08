@@ -35,6 +35,36 @@ public sealed class UserEntity : BaseEntity
     public ICollection<FavoriteEntity> FavoriteListings { get; private set; } = new List<FavoriteEntity>();
 
     /// <summary>
+    /// Short profile bio shown on "Moj profil". (optional)
+    /// </summary>
+    public string? ProfileDescription { get; set; }
+
+    /// <summary>
+    /// Relative URL of the profile photo, e.g. "/uploads/profile-images/abc.jpg". (optional)
+    /// </summary>
+    public string? ProfileImageUrl { get; set; }
+
+    /// <summary>
+    /// Relative URL of the cover photo. (optional)
+    /// </summary>
+    public string? CoverImageUrl { get; set; }
+
+    /// <summary>
+    /// True when phone, city and address are all filled in. Computed, never set directly.
+    /// </summary>
+    public bool IsVerified { get; private set; }
+
+    /// <summary>
+    /// Recalculates <see cref="IsVerified"/>. Call after any change of Phone, City or Address.
+    /// </summary>
+    public void UpdateVerification()
+    {
+        IsVerified = !string.IsNullOrWhiteSpace(Phone)
+                  && !string.IsNullOrWhiteSpace(City)
+                  && !string.IsNullOrWhiteSpace(Address);
+    }
+
+    /// <summary>
     /// Single source of truth for technical/business constraints.
     /// Used in validators and EF configuration.
     /// </summary>
@@ -51,5 +81,7 @@ public sealed class UserEntity : BaseEntity
         public const int AddressMaxLength = 200;
 
         public const int CityMaxLength = 100;
+        public const int ProfileDescriptionMaxLength = 1000;
+        public const int ImageUrlMaxLength = 500;
     }
 }
