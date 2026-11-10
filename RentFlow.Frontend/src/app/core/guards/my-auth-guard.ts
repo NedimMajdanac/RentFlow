@@ -48,17 +48,11 @@ export const myAuthGuard: CanActivateFn = (
   // 1) user nije logiran ili mu je sesija istekla → login, uz adresu na koju se vraća
   const user = currentUser.snapshot;
   if (!user || !auth.hasValidSession()) {
-    return router.createUrlTree(['/auth/login'], { queryParams: { returnUrl: state.url } });
+    return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
   }
 
   // 2) role check – ako user nema traženu ulogu → njegova početna ruta
-  if (
-    (requireAdmin && !user.isAdmin) ||
-    (requireManager && !user.isManager) ||
-    (requireEmployee && !user.isEmployee)
-  ) {
-    return router.createUrlTree([currentUser.getDefaultRoute()]);
-  }
+  
 
   return true;
 };

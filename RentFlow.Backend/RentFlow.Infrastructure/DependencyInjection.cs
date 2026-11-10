@@ -60,6 +60,9 @@ public static class DependencyInjection
         // Currency conversion (reads rates from the database)
         services.AddScoped<ICurrencyConverter, CurrencyConverter>();
 
+        // Uploaded files (product images) in wwwroot/uploads
+        services.AddSingleton<IFileStorage, LocalFileStorage>();
+
         AddExchangeRateProvider(services, configuration);
 
         return services;

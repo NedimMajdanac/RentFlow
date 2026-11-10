@@ -1,0 +1,240 @@
+<div class="page">
+  <header class="page__header">
+    <h1>Moj profil</h1>
+    <p>Upravljajte svojim nekretninama i pratite njihov status.</p>
+  </header>
+
+  @if (loading()) {
+    <div class="state">Učitavanje profila...</div>
+  } @else if (loadError()) {
+    <div class="state state--error">
+      <p>{{ loadError() }}</p>
+      <button type="button" class="btn btn--primary" (click)="load()">Pokušaj ponovo</button>
+    </div>
+  } @else if (profile(); as p) {
+    <div class="top">
+      <section class="card profile">
+        <div class="cover" [style.background-image]="coverBg()">
+          <button type="button" class="cover__edit" (click)="coverInput.click()"
+                  [disabled]="uploading() === 'cover'">
+            {{ uploading() === 'cover' ? 'Slanje...' : 'Promijeni naslovnu' }}
+          </button>
+          <input #coverInput type="file" hidden accept="image/jpeg,image/png,image/webp"
+                 (change)="onFileSelected('cover', $event)" />
+        </div>
+
+        <div class="profile__head">
+          <div class="avatar">
+            @if (avatarUrl(); as src) {
+              <img [src]="src" alt="Profilna slika" />
+            } @else {
+              <span class="avatar__initials">{{ initials() }}</span>
+            }
+            <button type="button" class="avatar__edit" (click)="avatarInput.click()"
+                    [disabled]="uploading() === 'profile'">
+              {{ uploading() === 'profile' ? 'Slanje...' : 'Promijeni' }}
+            </button>
+            <input #avatarInput type="file" hidden accept="image/jpeg,image/png,image/webp"
+                   (change)="onFileSelected('profile', $event)" />
+          </div>
+
+          <div class="profile__name">
+            <h2>{{ fullName() }}</h2>
+            @if (p.isVerified) {
+              <span class="verified" title="Verifikovan profil" aria-label="Verifikovan profil">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                     stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10" /></svg>
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="profile__body">
+          <div class="stats">
+            <span>{{ p.propertiesCount }} Nekretnina</span>
+            <span class="stats__sep"></span>
+            <span>{{ memberSince() }}</span>
+          </div>
+
+          <div class="chips">
+            <button type="button" class="chip" (click)="openEdit('profileDescription')">Opis</button>
+            <button type="button" class="chip" [class.chip--active]="editing()" (click)="openEdit()">Ažuriraj</button>
+            <span class="chip chip--status" [class.chip--off]="!p.isEnabled">
+              {{ p.isEnabled ? 'Aktivan' : 'Neaktivan' }}
+            </span>
+          </div>
+
+          @if (editing()) {
+            <form class="edit" [formGroup]="form" (ngSubmit)="save()" novalidate>
+              <div class="grid2">
+                <div class="edit__group">
+                  <label class="edit__label" for="f-fullName">Ime i prezime</label>
+                  <input id="f-fullName" formControlName="fullName" placeholder="Ime i prezime"
+                         autocomplete="name" [class.is-invalid]="fieldError('fullName')" />
+                  @if (fieldError('fullName'); as e) { <small class="error">{{ e }}</small> }
+                </div>
+
+                <div class="edit__group">
+                  <label class="edit__label" for="f-city">Grad</label>
+                  <select id="f-city" formControlName="city" [class.is-invalid]="fieldError('city')">
+                    <option value="">Odaberite grad...</option>
+                    @for (c of cityOptions(); track c) {
+                      <option [value]="c">{{ c }}</option>
+                    }
+                  </select>
+                  @if (fieldError('city'); as e) { <small class="error">{{ e }}</small> }
+                </div>
+              </div>
+
+              <div class="edit__group">
+                <span class="edit__label">Email i telefon</span>
+                <p class="edit__hint">Ukoliko želite verifikovan profil, unesite telefon, grad i adresu.</p>
+                <div class="grid2">
+                  <input type="email" [value]="p.email" readonly aria-label="Email"
+                         title="Email se ne može mijenjati ovdje" class="is-readonly" />
+                  <div>
+                    <input id="f-phone" formControlName="phone" placeholder="+387 61 123 456"
+                           autocomplete="tel" aria-label="Telefon" [class.is-invalid]="fieldError('phone')" />
+                    @if (fieldError('phone'); as e) { <small class="error">{{ e }}</small> }
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid2">
+                <div class="edit__group">
+                  <label class="edit__label" for="f-address">Adresa</label>
+                  <input id="f-address" formControlName="address" placeholder="Ulica i broj"
+                         autocomplete="street-address" [class.is-invalid]="fieldError('address')" />
+                  @if (fieldError('address'); as e) { <small class="error">{{ e }}</small> }
+                </div>
+              </div>
+
+              <div class="edit__group">
+                <label class="edit__label" for="f-profileDescription">Opis</label>
+                <textarea id="f-profileDescription" rows="7" formControlName="profileDescription"
+                          placeholder="Nekoliko rečenica o vama i vašim nekretninama"
+                          [class.is-invalid]="fieldError('profileDescription')"></textarea>
+                <div class="counter">{{ form.controls.profileDescription.value.length }} / 1000</div>
+                @if (fieldError('profileDescription'); as e) { <small class="error">{{ e }}</small> }
+              </div>
+
+              <p class="verify" [class.verify--ok]="willBeVerified">
+                {{ willBeVerified
+                  ? 'Profil će biti verifikovan.'
+                  : 'Profil se verifikuje kada su telefon, grad i adresa popunjeni.' }}
+              </p>
+
+              <div class="edit__actions">
+                <button type="button" class="btn btn--outline" (click)="cancelEdit()" [disabled]="saving()">Otkaži</button>
+                <button type="submit" class="btn btn--primary" [disabled]="saving()">
+                  {{ saving() ? 'Čuvanje...' : 'Sačuvaj' }}
+                </button>
+              </div>
+            </form>
+          } @else {
+            @if (p.profileDescription) {
+              <p class="description">{{ p.profileDescription }}</p>
+            } @else {
+              <p class="description description--empty">
+                Još niste dodali opis profila.
+                <button type="button" class="link" (click)="openEdit('profileDescription')">Dodajte opis</button>
+              </p>
+            }
+
+            @if (!p.isVerified) {
+              <p class="hint">
+                Dodajte broj telefona, grad i adresu da biste verifikovali profil.
+                <button type="button" class="link" (click)="openEdit('phone')">Dopuni podatke</button>
+              </p>
+            }
+          }
+        </div>
+      </section>
+
+      <div class="side">
+        <section class="card donut">
+  <h2>Nekretnina</h2>
+
+  <div class="donut__ring">
+    <svg viewBox="0 0 200 200" aria-hidden="true">
+      <circle cx="100" cy="100" r="88" />
+    </svg>
+    <strong>{{ p.propertiesCount }}</strong>
+  </div>
+
+  <div class="donut__stats">
+    <div class="stat">
+      <span class="stat__bar stat__bar--blue"></span>
+      <div>
+        <small>Iznajmljeno</small>
+        <strong>{{ p.rentedCount }}</strong>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat__bar stat__bar--green"></span>
+      <div>
+        <small>Prodano</small>
+        <strong>{{ p.soldCount }}</strong>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat__bar stat__bar--gray"></span>
+      <div>
+        <small>Kupljeno</small>
+        <strong>{{ p.boughtCount }}</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+        <section class="card featured">
+          @if (p.featuredListing; as f) {
+            <div class="featured__img"
+                 [style.background-image]="featuredImage() ? 'url(&quot;' + featuredImage() + '&quot;)' : null"></div>
+            <div class="featured__body">
+              <h3>{{ f.title }}</h3>
+              <p>{{ f.description || 'Bez opisa.' }}</p>
+              <strong class="featured__price">{{ formatPrice(f.price, f.currencyCode) }}</strong>
+            </div>
+          } @else {
+            <div class="featured__empty">
+              <h3>Nema aktivnih oglasa</h3>
+              <p>Kada objavite oglas, ovdje će se prikazati vaš najnoviji.</p>
+            </div>
+          }
+        </section>
+      </div>
+    </div>
+
+    <section class="card saved">
+      <h2>Sačuvani oglasi</h2>
+
+      @if (p.savedListings.length) {
+        <div class="saved__grid">
+          @for (l of p.savedListings; track l.listingId) {
+            <a class="listing" [routerLink]="['/listings', l.listingId]">
+              <div class="listing__img"
+                   [style.background-image]="media(l.mainImageUrl) ? 'url(&quot;' + media(l.mainImageUrl) + '&quot;)' : null"></div>
+              <h3>{{ l.title }}</h3>
+              <span class="listing__meta">{{ l.cityName }}, BiH · {{ propertyTypeLabel(l.propertyType) }}</span>
+              <div class="listing__foot">
+                <span class="badge" [class.badge--sale]="l.listingType === 'Sale'">
+                  {{ listingTypeLabel(l.listingType) }}
+                </span>
+                <strong>{{ formatPrice(l.price, l.currencyCode) }}</strong>
+              </div>
+            </a>
+          }
+        </div>
+      } @else {
+        <p class="saved__empty">Još nemate sačuvanih oglasa.</p>
+      }
+    </section>
+  }
+</div>
+
+@if (toast(); as t) {
+  <div class="toast" [class.toast--error]="t.kind === 'error'" role="status" aria-live="polite">
+    {{ t.text }}
+  </div>
+}

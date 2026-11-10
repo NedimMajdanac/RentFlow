@@ -18,4 +18,30 @@ export const routes: Routes = [
     pathMatch: 'full',
     loadComponent: () => import('./modules/public/landing/landing.component').then(m => m.LandingComponent),
   },
+  {
+    path: '',
+    canActivate: [myAuthGuard],
+    loadComponent: () => import('./core/layout/shell.component').then((m) => m.ShellComponent),
+    children: [
+      {
+        path: 'profile',
+        data: { title: 'Moj profil' },
+        loadComponent: () => import('./modules/profile/profile.component').then((m) => m.ProfileComponent),
+      },
+      ...[
+        ['dashboard', 'Pregled'],
+        ['my-properties', 'Moje nekretnine'],
+        ['listings', 'Pregledaj nekretnine'],
+        ['requests', 'Moji zahtjevi'],
+        ['transactions', 'Transakcije'],
+        ['contracts', 'Ugovori'],
+        ['settings', 'Postavke'],
+        ['help', 'Centar za pomoć'],
+      ].map(([path, title]) => ({
+        path,
+        data: { title },
+        loadComponent: () => import('./core/layout/placeholder.component').then((m) => m.PlaceholderComponent),
+      })),
+    ],
+  },
 ];

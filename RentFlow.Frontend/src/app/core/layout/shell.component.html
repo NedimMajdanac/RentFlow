@@ -1,0 +1,125 @@
+<div class="shell">
+  @if (menuOpen()) {
+    <div class="backdrop" (click)="menuOpen.set(false)"></div>
+  }
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" [class.sidebar--open]="menuOpen()" aria-label="Glavni meni">
+    <a class="brand" routerLink="/profile">
+      <span class="brand__logo">R</span>
+      <span class="brand__name">RentFlow</span>
+    </a>
+
+    <span class="sidebar__label">RADNI PROSTOR</span>
+
+    <nav class="menu">
+      @for (item of nav; track item.path) {
+        <a class="menu__item" [routerLink]="item.path" routerLinkActive="menu__item--active">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            @switch (item.icon) {
+              @case ('home') { <path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" /> }
+              @case ('building') {
+                <rect x="4" y="3" width="16" height="18" rx="1" />
+                <path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2" />
+              }
+              @case ('search') {
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              }
+              @case ('send') {
+                <path d="M22 2L11 13" />
+                <path d="M22 2l-7 20-4-9-9-4z" />
+              }
+              @case ('card') {
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <path d="M2 10h20" />
+              }
+              @case ('file') {
+                <path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z" />
+                <path d="M14 3v5h5M9 13h6M9 17h6" />
+              }
+            }
+          </svg>
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="divider"></div>
+
+    <nav class="menu">
+      <a class="menu__item" routerLink="/settings" routerLinkActive="menu__item--active">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" />
+        </svg>
+        Postavke
+      </a>
+    </nav>
+
+    <div class="sidebar__spacer"></div>
+
+    <div class="help">
+      <strong>Trebate pomoć?</strong>
+      <p>Pogledajte kratke upute za korištenje RentFlowa.</p>
+      <a routerLink="/help">Centar za pomoć →</a>
+    </div>
+
+    <div class="me">
+      <a class="me__link" routerLink="/profile" aria-label="Moj profil">
+        <span class="avatar">{{ me.initials() }}</span>
+        <span class="me__text">
+          <strong>{{ me.fullName() || '...' }}</strong>
+          <small>{{ me.roleLabel() }}</small>
+        </span>
+      </a>
+      <button type="button" class="me__logout" (click)="logout()" title="Odjava" aria-label="Odjava">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4" />
+          <path d="M16 17l5-5-5-5M21 12H9" />
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- GLAVNI DIO -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar__left">
+        <button type="button" class="hamburger" (click)="menuOpen.set(true)" aria-label="Otvori meni">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+        <nav class="crumbs" aria-label="Putanja">
+          <a routerLink="/profile">Početna</a>
+          @if (pageTitle()) {
+            <span class="crumbs__sep">/</span>
+            <span class="crumbs__current">{{ pageTitle() }}</span>
+          }
+        </nav>
+      </div>
+
+      <label class="search">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" />
+        </svg>
+        <input type="search" placeholder="Pretraži nekretnine, najmoprimce..."
+               (keyup.enter)="onSearch(searchInput.value)" #searchInput />
+      </label>
+
+      <a class="topbar__avatar" routerLink="/profile" [attr.aria-label]="'Moj profil: ' + me.fullName()">
+        {{ me.initials() }}
+      </a>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
