@@ -22,6 +22,9 @@ namespace RentFlow.Application.Modules.Profile.Queries.GetMyProfile
         public required int PropertiesCount { get; init; }
         public required FeaturedListingDto? FeaturedListing { get; init; }
         public required List<SavedListingDto> SavedListings { get; init; }
+        public required int RentedCount { get; init; }   
+        public required int SoldCount { get; init; }     
+        public required int BoughtCount { get; init; }   
     }
 
     /// <summary>The owner's most recent active listing (right-hand card).</summary>

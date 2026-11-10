@@ -20,6 +20,17 @@ namespace RentFlow.Application.Modules.Profile.Queries.GetMyProfile
             var propertiesCount = await ctx.Properties
                 .CountAsync(p => p.OwnerId == userId, ct);
 
+            var rentedCount = await ctx.Listings
+                .CountAsync(l => l.Property.OwnerId == userId && l.Status == ListingStatus.Rented, ct);
+
+            var soldCount = await ctx.Listings
+                .CountAsync(l => l.Property.OwnerId == userId && l.Status == ListingStatus.Sold, ct);
+
+            var boughtCount = await ctx.Contracts
+                .CountAsync(c => c.BuyerOrTenantId == userId
+                              && c.ContractType == ContractType.Sale
+                              && c.Status == ContractStatus.Completed, ct);
+
             var featured = await ctx.Listings.AsNoTracking()
                 .Where(l => l.Property.OwnerId == userId && l.Status == ListingStatus.Active)
                 .OrderByDescending(l => l.PublishedAtUtc)
@@ -82,7 +93,10 @@ namespace RentFlow.Application.Modules.Profile.Queries.GetMyProfile
                     Price = r.Price,
                     CurrencyCode = r.CurrencyCode,
                     MainImageUrl = r.MainImageUrl
-                }).ToList()
+                }).ToList(),
+                RentedCount = rentedCount,
+                SoldCount = soldCount,
+                BoughtCount = boughtCount,
             };
         }
     }
