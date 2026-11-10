@@ -10,10 +10,8 @@
   --danger: #d93025;
 
   display: block;
-  min-height: 100vh;
-  background: var(--page);
   color: var(--navy);
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+  font-family: Inter, 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 h1, h2, h3, p { margin: 0; }
@@ -91,13 +89,31 @@ button.chip:hover { background: var(--page); }
 .hint { margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: #fff7e6; color: #8a5a00; font-size: 13px; }
 
 .side { display: grid; gap: 20px; }
-.donut { display: grid; place-items: center; padding: 36px 24px; }
-.donut__ring { position: relative; width: 220px; height: 220px; }
+.donut { display: flex; flex-direction: column; align-items: center; padding: 24px 24px 20px; }
+.donut h2 { font-size: 26px; font-weight: 800; }
+
+.donut__ring { position: relative; width: 170px; height: 170px; margin: 22px 0 26px; }
 .donut__ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.donut__ring circle { fill: none; stroke: var(--blue); stroke-width: 22; }
-.donut__label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.donut__label strong { font-size: 44px; line-height: 1; font-weight: 800; }
-.donut__label span { margin-top: 6px; font-size: 22px; font-weight: 700; }
+.donut__ring circle { fill: none; stroke: var(--blue); stroke-width: 26; }
+.donut__ring strong {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: 44px; font-weight: 800;
+}
+
+.donut__stats { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+.stat { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 8px; }
+.stat + .stat { border-left: 1px solid var(--border); }
+.stat small { display: block; color: var(--muted); font-size: 12px; }
+.stat strong { font-size: 32px; line-height: 1.1; font-weight: 800; }
+.stat__bar { flex: none; width: 14px; height: 38px; border-radius: 999px; }
+.stat__bar--blue { background: var(--blue); }
+.stat__bar--green { background: #16c75a; }
+.stat__bar--gray { background: #d9dde5; }
+
+@media (max-width: 1100px) {
+  .stat { flex-direction: column; gap: 6px; text-align: center; }
+  .stat__bar { width: 38px; height: 8px; }
+}
 
 .featured { display: grid; grid-template-columns: 180px 1fr; gap: 16px; padding: 12px; min-height: 270px; }
 .featured__img { border-radius: 12px; background: linear-gradient(135deg, #5b7fc7, #2a4a91) center/cover no-repeat; }

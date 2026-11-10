@@ -153,16 +153,39 @@
 
       <div class="side">
         <section class="card donut">
-          <div class="donut__ring">
-            <svg viewBox="0 0 200 200" aria-hidden="true">
-              <circle cx="100" cy="100" r="88" />
-            </svg>
-            <div class="donut__label">
-              <strong>{{ p.propertiesCount }}</strong>
-              <span>Nekretnina</span>
-            </div>
-          </div>
-        </section>
+  <h2>Nekretnina</h2>
+
+  <div class="donut__ring">
+    <svg viewBox="0 0 200 200" aria-hidden="true">
+      <circle cx="100" cy="100" r="88" />
+    </svg>
+    <strong>{{ p.propertiesCount }}</strong>
+  </div>
+
+  <div class="donut__stats">
+    <div class="stat">
+      <span class="stat__bar stat__bar--blue"></span>
+      <div>
+        <small>Iznajmljeno</small>
+        <strong>{{ p.rentedCount }}</strong>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat__bar stat__bar--green"></span>
+      <div>
+        <small>Prodano</small>
+        <strong>{{ p.soldCount }}</strong>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat__bar stat__bar--gray"></span>
+      <div>
+        <small>Kupljeno</small>
+        <strong>{{ p.boughtCount }}</strong>
+      </div>
+    </div>
+  </div>
+</section>
 
         <section class="card featured">
           @if (p.featuredListing; as f) {

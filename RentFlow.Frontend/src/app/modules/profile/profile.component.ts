@@ -12,6 +12,7 @@ import { RouterLink } from '@angular/router';
 import { ImageKind,MyProfile } from '../../core/models/profile.models';
 import { ProfileService } from '../../core/services/profile.service';
 import { extractFieldErrors } from '../../core/http/api-error';
+import { CurrentUserService } from '../../core/services/current-user.service';
 
 type FieldName = 'fullName' | 'phone' | 'city' | 'address' | 'profileDescription';
 
@@ -52,6 +53,8 @@ export class ProfileComponent implements OnInit {
   readonly uploading = signal<ImageKind | null>(null);
   readonly toast = signal<{ text: string; kind: 'success' | 'error' } | null>(null);
   private toastTimer?: ReturnType<typeof setTimeout>;
+
+  private readonly currentUser = inject(CurrentUserService);
 
   readonly form = this.fb.nonNullable.group({
     fullName: ['', [Validators.required, Validators.maxLength(201), fullNameValidator]],
@@ -177,6 +180,7 @@ export class ProfileComponent implements OnInit {
         this.profile.update((p) => (p ? { ...p, ...body, isVerified: res.isVerified } : p));
         this.saving.set(false);
         this.editing.set(false);
+        this.currentUser.refresh();
         this.showToast(res.isVerified ? 'Profil je sačuvan i verifikovan.' : 'Profil je sačuvan.', 'success');
       },
       error: (err: HttpErrorResponse) => {
