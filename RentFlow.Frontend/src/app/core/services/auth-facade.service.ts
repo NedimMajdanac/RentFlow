@@ -51,8 +51,6 @@ export class AuthFacadeService {
   /** computed signali nad current userom */
   isAuthenticated = computed(() => !!this._currentUser());
   isAdmin = computed(() => this._currentUser()?.isAdmin ?? false);
-  isManager = computed(() => this._currentUser()?.isManager ?? false);
-  isEmployee = computed(() => this._currentUser()?.isEmployee ?? false);
 
   /** Istek access tokena (ms od epohe), iz JWT "exp" claima. */
   private accessTokenExpiresAtMs: number | null = null;
@@ -217,8 +215,6 @@ export class AuthFacadeService {
         userId: Number(payload.sub),
         email: payload.email,
         isAdmin: payload.is_admin === 'true',
-        isManager: payload.is_manager === 'true',
-        isEmployee: payload.is_employee === 'true',
         tokenVersion: Number(payload.ver),
       };
 

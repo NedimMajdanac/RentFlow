@@ -52,13 +52,7 @@ export const myAuthGuard: CanActivateFn = (
   }
 
   // 2) role check – ako user nema traženu ulogu → njegova početna ruta
-  if (
-    (requireAdmin && !user.isAdmin) ||
-    (requireManager && !user.isManager) ||
-    (requireEmployee && !user.isEmployee)
-  ) {
-    return router.createUrlTree([currentUser.getDefaultRoute()]);
-  }
+  
 
   return true;
 };

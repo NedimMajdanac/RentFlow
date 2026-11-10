@@ -37,6 +37,9 @@ export interface MyProfile {
   propertiesCount: number;
   featuredListing: FeaturedListing | null;
   savedListings: SavedListing[];
+  rentedCount: number;
+  soldCount: number;
+  boughtCount: number;
 }
 
 export interface UpdateProfileRequest {
