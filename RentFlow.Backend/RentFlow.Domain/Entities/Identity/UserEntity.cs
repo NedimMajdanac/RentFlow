@@ -65,6 +65,16 @@ public sealed class UserEntity : BaseEntity
     }
 
     /// <summary>
+    /// Changes the admin flag and revokes all issued tokens, so the change applies immediately.
+    /// </summary>
+    public void SetAdmin(bool value)
+    {
+        if (IsAdmin == value) return;
+        IsAdmin = value;
+        TokenVersion++;
+    }
+
+    /// <summary>
     /// Single source of truth for technical/business constraints.
     /// Used in validators and EF configuration.
     /// </summary>

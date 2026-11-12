@@ -3,6 +3,7 @@ using RentFlow.API;
 using RentFlow.API.Middleware;
 using RentFlow.Application;
 using RentFlow.Infrastructure;
+using RentFlow.Application.Common;
 
 
 public partial class Program
@@ -76,6 +77,13 @@ public partial class Program
                             .AllowAnyMethod()
                             .AllowCredentials();
                     });
+            });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AuthPolicies.AdminOnly, policy => policy
+                    .RequireAuthenticatedUser()
+                    .RequireClaim(AuthClaims.IsAdmin, "true"));
             });
 
             var app = builder.Build();
