@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { myAuthGuard } from './core/guards/my-auth-guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   { path: 'register', loadComponent: () => import('./modules/auth/register/register.component').then(m => m.RegisterComponent) },
@@ -42,6 +43,19 @@ export const routes: Routes = [
         data: { title },
         loadComponent: () => import('./core/layout/placeholder.component').then((m) => m.PlaceholderComponent),
       })),
+      {
+        path: 'admin',
+        canActivate: [adminGuard],
+        data: { title: 'Admin dashboard' },
+        loadComponent: () =>
+          import('./modules/admin/admin-dashboard.component').then((m) => m.AdminDashboardComponent),
+      },
+      {
+        path: 'forbidden',
+        data: { title: 'Pristup odbijen' },
+        loadComponent: () =>
+          import('./modules/errors/forbidden.component').then((m) => m.ForbiddenComponent),
+      },
     ],
   },
 ];

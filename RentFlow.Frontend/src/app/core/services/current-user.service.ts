@@ -1,65 +1,74 @@
-// src/app/core/services/auth/current-user.service.ts
-import { Injectable, inject, computed, signal } from '@angular/core';
-import { AuthFacadeService } from './auth-facade.service';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { environment } from '../../environments/environment.development';
-
-export interface CurrentUser {
-  id: number;
-  email: string;
-  firstname: string;
-  lastname: string;
-  isAdmin: boolean;
-}
+import { AuthFacadeService } from './auth-facade.service';
+import { CurrentUserDto, MeResponse } from './current-user.dto';
 
 @Injectable({ providedIn: 'root' })
 export class CurrentUserService {
-  private auth = inject(AuthFacadeService);
-
-  /** Signal koji UI može čitati (readonly) */
-  currentUser = computed(() => this.auth.currentUser());
-
-  isAuthenticated = computed(() => this.auth.isAuthenticated());
-  isAdmin = computed(() => this.auth.isAdmin());
-
-  get snapshot() {
-    return this.auth.currentUser();
-  }
-
-  /** Pravilo: admin > ostali → client */
-  getDefaultRoute(): string {
-    const user = this.snapshot;
-    if (!user) return '/auth/login';
-
-    if (user.isAdmin) return '/admin';
-    return '/client';
-  }
+  private readonly auth = inject(AuthFacadeService);
   private readonly http = inject(HttpClient);
 
-  readonly user = signal<CurrentUser | null>(null);
+  private readonly meUrl = `${environment.apiUrl}/api/auth/me`;
+
+  private readonly profile = signal<MeResponse | null>(null);
+
+  readonly currentUser = computed<CurrentUserDto | null>(() => {
+    const identity = this.auth.currentUser();
+    if (!identity) return null;
+
+    const p = this.profile();
+    if (!p || p.id !== identity.userId) return identity;
+
+    return {
+      ...identity,
+      firstname: p.firstname,
+      lastname: p.lastname,
+      phone: p.phone,
+      address: p.address,
+      city: p.city,
+    };
+  });
+
+  readonly isAuthenticated = computed(() => this.auth.isAuthenticated());
+  readonly isAdmin = computed(() => this.auth.isAdmin());
 
   readonly fullName = computed(() => {
-    const u = this.user();
-    return u ? `${u.firstname} ${u.lastname}`.trim() : '';
+    const u = this.currentUser();
+    return u?.firstname ? `${u.firstname} ${u.lastname ?? ''}`.trim() : '';
   });
 
   readonly initials = computed(() => {
-    const u = this.user();
-    return u ? `${u.firstname.charAt(0)}${u.lastname.charAt(0)}`.toUpperCase() : '';
+    const u = this.currentUser();
+    if (!u) return '';
+    if (u.firstname) {
+      return `${u.firstname.charAt(0)}${(u.lastname ?? '').charAt(0)}`.toUpperCase();
+    }
+    return u.email.charAt(0).toUpperCase(); // dok se profil ne učita
   });
 
-  readonly roleLabel = computed(() => (this.user()?.isAdmin ? 'Administrator' : 'Vlasnik nekretnina'));
+  readonly roleLabel = computed(() => (this.isAdmin() ? 'Administrator' : 'Vlasnik nekretnina'));
 
-  /** Učitava podatke iz GetMe endpointa. Poziva se pri ulasku u aplikaciju i poslije izmjene profila. */
+  get snapshot(): CurrentUserDto | null {
+    return this.currentUser();
+  }
+
+  getDefaultRoute(): string {
+    const user = this.snapshot;
+    if (!user) return '/auth/login'; 
+    return user.isAdmin ? '/admin' : '/profile';
+  }
+
   refresh(): void {
-    // TODO(starter): provjeri putanju GetMe endpointa (GetMeQuery)
-    this.http.get<CurrentUser>(`${environment.apiUrl}/api/auth/me`).subscribe({
-      next: (u) => this.user.set(u),
-      error: () => {},
+    if (!this.auth.isAuthenticated()) return;
+
+    this.http.get<MeResponse>(this.meUrl).subscribe({
+      next: (p) => this.profile.set(p),
+      error: () => {}, 
     });
   }
 
   clear(): void {
-    this.user.set(null);
+    this.profile.set(null);
   }
 }

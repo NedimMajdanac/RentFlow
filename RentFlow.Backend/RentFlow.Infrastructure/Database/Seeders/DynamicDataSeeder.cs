@@ -22,6 +22,10 @@ public sealed class DynamicDataSeeder(DatabaseContext db, IPasswordHasher<UserEn
 
     public async Task SeedAsync(CancellationToken ct = default)
     {
+        var admin = await GetOrCreateUserAsync("admin@rentflow.ba", "Admin", "RentFlow", true, ct);
+        admin.IsAdmin = true;
+        await db.SaveChangesAsync(ct);
+
         if (await db.Properties.AnyAsync(ct)) return;
 
         // ---------- currency and exchange rates ----------
@@ -33,11 +37,10 @@ public sealed class DynamicDataSeeder(DatabaseContext db, IPasswordHasher<UserEn
             .FirstOrDefaultAsync(ct);
 
         // ---------- users ----------
-        var owner1  = await GetOrCreateUserAsync("vlasnik1@rentflow.ba", "Amir", "Hadžić", ct);
-        var owner2  = await GetOrCreateUserAsync("vlasnik2@rentflow.ba", "Lejla", "Kovačević", ct);
-        var tenant1 = await GetOrCreateUserAsync("korisnik1@rentflow.ba", "Emir", "Begić", ct);
-        var tenant2 = await GetOrCreateUserAsync("korisnik2@rentflow.ba", "Ivana", "Marić", ct);
-
+        var owner1  = await GetOrCreateUserAsync("vlasnik1@rentflow.ba", "Amir", "Hadžić", false, ct);
+        var owner2  = await GetOrCreateUserAsync("vlasnik2@rentflow.ba", "Lejla", "Kovačević", false, ct);
+        var tenant1 = await GetOrCreateUserAsync("korisnik1@rentflow.ba", "Emir", "Begić", false, ct);
+        var tenant2 = await GetOrCreateUserAsync("korisnik2@rentflow.ba", "Ivana", "Marić", false, ct);
         var amenities = await db.Amenities.ToDictionaryAsync(a => a.Name, ct);
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -221,7 +224,7 @@ public sealed class DynamicDataSeeder(DatabaseContext db, IPasswordHasher<UserEn
         await db.SaveChangesAsync(ct);
     }
 
-    private async Task<UserEntity> GetOrCreateUserAsync(string email, string firstName, string lastName, CancellationToken ct)
+    private async Task<UserEntity> GetOrCreateUserAsync(string email, string firstName, string lastName, bool isAdmin, CancellationToken ct)
     {
         var existing = await db.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
         if (existing is not null) return existing;
@@ -231,7 +234,7 @@ public sealed class DynamicDataSeeder(DatabaseContext db, IPasswordHasher<UserEn
             Firstname = firstName,
             Lastname = lastName,
             Email = email,
-            IsAdmin=false,
+            IsAdmin = isAdmin,
             IsEnabled = true
         };
         user.PasswordHash = passwordHasher.HashPassword(user, "Test123!");
