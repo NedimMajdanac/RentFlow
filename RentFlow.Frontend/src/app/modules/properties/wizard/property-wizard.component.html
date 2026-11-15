@@ -1,0 +1,49 @@
+<div class="page">
+  <h1 class="page__title">Dodaj nekretninu</h1>
+
+  <div class="layout">
+    <aside class="steps" aria-label="Koraci registracije nekretnine">
+      <h2>Proces registracije</h2>
+      <p class="steps__count">Korak {{ stepNumber() }} od {{ steps.length }}</p>
+
+      <div class="bar" role="progressbar" aria-label="Napredak"
+           aria-valuemin="1" [attr.aria-valuemax]="steps.length" [attr.aria-valuenow]="stepNumber()">
+        <span [style.width.%]="progress()"></span>
+      </div>
+
+      <ol class="list">
+        @for (s of steps; track s.path; let i = $index) {
+          <li>
+            <a class="step"
+               [class.step--active]="i === currentIndex()"
+               [class.step--done]="isDone(i)"
+               [class.step--locked]="!reachable(i)"
+               [routerLink]="reachable(i) ? [base, s.path] : null"
+               [attr.aria-current]="i === currentIndex() ? 'step' : null"
+               [attr.aria-disabled]="!reachable(i)"
+               [attr.tabindex]="reachable(i) ? null : -1">
+              <span class="step__num">
+                @if (isDone(i)) {
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+                       stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12l5 5 9-10" />
+                  </svg>
+                } @else {
+                  {{ i + 1 }}
+                }
+              </span>
+              <span class="step__text">
+                <strong>{{ s.title }}</strong>
+                <small>{{ s.subtitle }}</small>
+              </span>
+            </a>
+          </li>
+        }
+      </ol>
+    </aside>
+
+    <section class="card">
+      <router-outlet />
+    </section>
+  </div>
+</div>
