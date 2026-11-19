@@ -1,0 +1,90 @@
+<app-wizard-step title="Dodaj fotografije" subtitle="Prenesite fotografije vaše nekretnine i odaberite naslovnu">
+  <section class="block">
+    <h3>Prenesi fotografiju</h3>
+    <p class="hint" id="photos-hint">Odaberite fotografiju iz vaše galerije</p>
+
+    <input #fileInput type="file" hidden multiple [accept]="accept" (change)="onPicked($event)" />
+
+    <div class="zone" [class.zone--drag]="dragging()" [class.zone--compact]="photos().length > 0"
+         (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+      <button type="button" class="zone__btn" aria-describedby="photos-hint photos-rules"
+              [disabled]="!canAddMore() || checking()" (click)="fileInput.click()">
+        <span class="zone__plus" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor"
+               stroke-width="1.2" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </span>
+        <span class="zone__text">
+          @if (checking()) {
+            Provjera fotografija...
+          } @else if (!canAddMore()) {
+            Dostignut je najveći broj fotografija
+          } @else if (dragging()) {
+            Pustite fotografije ovdje
+          } @else {
+            Prenesite sliku ili kliknite ovdje za pretragu...
+          }
+        </span>
+      </button>
+    </div>
+    <p class="rules" id="photos-rules">JPG, PNG ili WebP · najviše 5 MB po slici · najviše {{ maxPhotos }} fotografija</p>
+
+    @if (errors().length) {
+      <div class="alert" role="alert">
+        @for (m of errors(); track m) { <p>{{ m }}</p> }
+      </div>
+    }
+  </section>
+
+  @if (photos().length) {
+    <section class="gallery">
+      <div class="gallery__head">
+        <h3>Odabrane fotografije <span class="count">{{ photos().length }} / {{ maxPhotos }}</span></h3>
+        <button type="button" class="text-btn" (click)="clearAll()">Ukloni sve</button>
+      </div>
+      <p class="hint">Prva fotografija je naslovna. Promijenite redoslijed strelicama.</p>
+
+      <ul class="grid">
+        @for (p of photos(); track p.id; let i = $index) {
+          <li class="card" [class.card--main]="i === 0">
+            <div class="card__img">
+              <img [src]="p.url" [alt]="'Fotografija ' + (i + 1) + ': ' + p.file.name" />
+              @if (i === 0) { <span class="badge">Naslovna</span> }
+            </div>
+
+            <div class="card__bar">
+              @if (i === 0) {
+                <span class="muted">Naslovna fotografija</span>
+              } @else {
+                <button type="button" class="text-btn" (click)="makeMain(p.id)">Postavi kao naslovnu</button>
+              }
+
+              <div class="tools">
+                <button type="button" class="tool" [disabled]="i === 0" (click)="move(p.id, -1)"
+                        [attr.aria-label]="'Pomjeri fotografiju ' + (i + 1) + ' ulijevo'">‹</button>
+                <button type="button" class="tool" [disabled]="i === photos().length - 1" (click)="move(p.id, 1)"
+                        [attr.aria-label]="'Pomjeri fotografiju ' + (i + 1) + ' udesno'">›</button>
+                <button type="button" class="tool tool--danger" (click)="remove(p.id)"
+                        [attr.aria-label]="'Ukloni fotografiju ' + (i + 1)">×</button>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+  } @else {
+    <p class="empty">Fotografije su opcionalne, ali oglasi s fotografijama privlače više pažnje.</p>
+  }
+
+  <div footer>
+    <span></span>
+    <button type="button" class="btn" (click)="next()">
+      Sljedeći korak
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </button>
+  </div>
+</app-wizard-step>

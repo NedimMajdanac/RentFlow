@@ -96,8 +96,35 @@ export const routes: Routes = [
                 (m) => m.PropertyStepLocationComponent,
               ),
           },
+          {
+            path: 'features', // step 3
+            canActivate: [wizardStepGuard(2)],
+            data: { title: 'Nekretnine' },
+            loadComponent: () =>
+              import('./modules/properties/wizard/steps/features/property-step-features.component').then(
+                (m) => m.PropertyStepFeaturesComponent,
+              ),
+          },
+          {
+            path: 'details', // step 4
+            canActivate: [wizardStepGuard(3)],
+            data: { title: 'Nekretnine' },
+            loadComponent: () =>
+              import('./modules/properties/wizard/steps/details/property-step-details.component').then(
+                (m) => m.PropertyStepDetailsComponent,
+              ),
+          },
+          {
+            path: 'photos', 
+            canActivate: [wizardStepGuard(4)],
+            data: { title: 'Nekretnine' },
+            loadComponent: () =>
+              import('./modules/properties/wizard/steps/photos/property-step-photos.component').then(
+                (m) => m.PropertyStepPhotosComponent,
+              ),
+          },
 
-          ...WIZARD_STEPS.slice(2).map((step, i) => ({
+          ...WIZARD_STEPS.slice(5).map((step, i) => ({
             path: step.path,
             canActivate: [wizardStepGuard(i + 2)],
             data: { title: 'Nekretnine', stepTitle: step.title },

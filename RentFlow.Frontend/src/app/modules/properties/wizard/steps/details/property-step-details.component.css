@@ -1,0 +1,59 @@
+:host { display: block; color: #14213d; }
+
+.type-note { margin: 0 0 24px; padding: 12px 16px; border-radius: 10px; background: #eef3fe; color: #1b47b0; font-size: 14px; }
+
+.alert { margin: 0 0 24px; padding: 12px 16px; border-radius: 10px; background: #fdecea; color: #a1261b; font-size: 14px; }
+.alert p { margin: 0; }
+.alert p + p { margin-top: 4px; }
+
+.section + .section { padding-top: 28px; border-top: 1px solid #e3e8f3; }
+.section:last-of-type .block { margin-bottom: 8px; }
+
+.block--field { max-width: 78%; }
+
+.opt {
+  margin-left: 10px; vertical-align: middle;
+  padding: 3px 10px; border-radius: 999px; background: #eef2f8;
+  color: #5d6b8a; font-size: 12px; font-weight: 600; letter-spacing: 0;
+}
+
+.ms { position: relative; }
+.ms__btn {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; height: 44px; padding: 0 14px; border: 1px solid #e3e8f3; border-radius: 6px;
+  background: #fff; color: #14213d; font: inherit; font-size: 16px; text-align: left; cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.ms__btn:focus-visible, .ms__btn[aria-expanded='true'] { border-color: #2158d8; box-shadow: 0 0 0 3px rgba(33, 88, 216, 0.12); outline: none; }
+.ms__placeholder { color: #8a97b3; }
+
+.ms__panel {
+  position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; right: 0;
+  max-height: 280px; overflow-y: auto; padding: 8px;
+  border: 1px solid #e3e8f3; border-radius: 10px; background: #fff;
+  box-shadow: 0 12px 32px rgba(15, 29, 59, 0.14);
+}
+.ms__opt { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; font-size: 15px; cursor: pointer; }
+.ms__opt:hover { background: #f4f7fd; }
+.ms__opt input { width: 18px; height: 18px; flex: none; accent-color: #2158d8; cursor: pointer; }
+.ms__msg { margin: 0; padding: 12px; color: #5d6b8a; font-size: 14px; }
+
+.chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 8px 6px 14px;
+  border-radius: 999px; background: #e9f0fd; color: #1b47b0; font-size: 14px; font-weight: 500;
+}
+.chip button {
+  display: grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%;
+  background: transparent; color: inherit; font-size: 18px; line-height: 1; cursor: pointer;
+}
+.chip button:hover { background: rgba(33, 88, 216, 0.15); }
+
+.text-btn { padding: 0; border: 0; background: none; color: #2158d8; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.text-btn:hover { text-decoration: underline; }
+
+.btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+@media (max-width: 900px) {
+  .block--field { max-width: none; }
+}
