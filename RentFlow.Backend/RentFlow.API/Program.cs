@@ -1,9 +1,10 @@
-using Serilog;
 using RentFlow.API;
 using RentFlow.API.Middleware;
 using RentFlow.Application;
-using RentFlow.Infrastructure;
 using RentFlow.Application.Common;
+using RentFlow.Infrastructure;
+using Serilog;
+using System.Text.Json.Serialization;
 
 
 public partial class Program
@@ -85,6 +86,8 @@ public partial class Program
                     .RequireAuthenticatedUser()
                     .RequireClaim(AuthClaims.IsAdmin, "true"));
             });
+            builder.Services.AddControllers()
+                .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
             var app = builder.Build();
 
