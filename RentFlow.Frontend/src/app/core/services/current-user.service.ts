@@ -35,16 +35,13 @@ export class CurrentUserService {
 
   readonly fullName = computed(() => {
     const u = this.currentUser();
-    return u?.firstname ? `${u.firstname} ${u.lastname ?? ''}`.trim() : '';
+    return `${u?.firstname ?? ''} ${u?.lastname ?? ''}`.trim();
   });
 
   readonly initials = computed(() => {
     const u = this.currentUser();
-    if (!u) return '';
-    if (u.firstname) {
-      return `${u.firstname.charAt(0)}${(u.lastname ?? '').charAt(0)}`.toUpperCase();
-    }
-    return u.email.charAt(0).toUpperCase(); // dok se profil ne učita
+    const letters = `${u?.firstname?.charAt(0) ?? ''}${u?.lastname?.charAt(0) ?? ''}`.toUpperCase();
+    return letters || (u?.email?.charAt(0).toUpperCase() ?? '');
   });
 
   readonly roleLabel = computed(() => (this.isAdmin() ? 'Administrator' : 'Vlasnik nekretnina'));
