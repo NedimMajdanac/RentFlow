@@ -8,6 +8,7 @@ using RentFlow.Application.Modules.Properties.Commands.UpdateProperty;
 using RentFlow.Application.Modules.Properties.Commands.UploadPropertyImage;
 using RentFlow.Application.Modules.Properties.Common;
 using RentFlow.Application.Modules.Properties.Queries.GetMyProperties;
+using RentFlow.Application.Modules.Properties.Queries.GetMyPropertiesSummary;
 using RentFlow.Application.Modules.Properties.Queries.GetPropertyById;
 
 namespace RentFlow.API.Controllers;
@@ -20,6 +21,10 @@ public sealed class PropertiesController(ISender mediator) : ControllerBase
     [HttpGet("my")]
     public Task<PageResult<GetMyPropertiesQueryDto>> GetMine([FromQuery] GetMyPropertiesQuery query, CancellationToken ct)
         => mediator.Send(query, ct);
+
+    [HttpGet("my/summary")]
+    public Task<GetMyPropertiesSummaryQueryDto> GetMySummary(CancellationToken ct)
+    => mediator.Send(new GetMyPropertiesSummaryQuery(), ct);
 
     [HttpGet("{id:int}")]
     public Task<GetPropertyByIdQueryDto> GetById(int id, CancellationToken ct)

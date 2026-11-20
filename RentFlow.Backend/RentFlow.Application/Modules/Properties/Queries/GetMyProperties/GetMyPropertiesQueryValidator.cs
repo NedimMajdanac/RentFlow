@@ -12,6 +12,9 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetMyProperties
             RuleFor(x => x.PageSize).InclusiveBetween(1, 50);
             RuleFor(x => x.Search).MaximumLength(100);
             RuleFor(x => x.PropertyType).IsInEnum();
+            RuleFor(x => x.Status).IsInEnum();
+            RuleFor(x => x.ListingType).IsInEnum();
+            RuleFor(x => x.Sort).IsInEnum();
         }
     }
 }
