@@ -135,6 +135,12 @@ export const routes: Routes = [
           })),
         ],
       },
+      {
+        path: 'my-properties',
+        data: { title: 'Nekretnine' },
+        loadComponent: () =>
+          import('./modules/properties/list/my-properties.component').then((m) => m.MyPropertiesComponent),
+      },
 
       ...PLACEHOLDERS.map(([path, title]) => ({
         path,
