@@ -1,0 +1,149 @@
+<app-wizard-step title="Karakteristike" subtitle="Unesite karakteristike svoje nekretnine">
+  <form id="features-form" [formGroup]="form" (ngSubmit)="next()" novalidate>
+    <p class="type-note">
+      Tip nekretnine: <strong>{{ typeLabel }}</strong>. Prikazana su samo polja koja se odnose na taj tip.
+    </p>
+
+    @if (show('areaM2') || show('plotAreaM2')) {
+      <section class="section">
+        <div class="row">
+          @if (show('areaM2')) {
+            <div class="block">
+              <h3><label for="areaM2">Površina m²</label></h3>
+              <p class="hint" id="area-hint">Unesite površinu nekretnine</p>
+              <input id="areaM2" type="text" inputmode="decimal" formControlName="areaM2"
+                     placeholder="Npr. 65" aria-describedby="area-hint"
+                     [class.is-invalid]="fieldError('areaM2')"
+                     [attr.aria-invalid]="fieldError('areaM2') ? true : null" />
+              @if (fieldError('areaM2'); as e) { <small class="error" role="alert">{{ e }}</small> }
+            </div>
+          }
+          @if (show('plotAreaM2')) {
+            <div class="block">
+              <h3>
+                <label for="plotAreaM2">Površina zemljišta m²</label>
+                @if (isOptional('plotAreaM2')) { <span class="opt">opcionalno</span> }
+              </h3>
+              <p class="hint" id="plot-hint">
+                {{ isOptional('plotAreaM2') ? 'Unesite površinu zemljišta ukoliko ga ima' : 'Unesite površinu zemljišta' }}
+              </p>
+              <input id="plotAreaM2" type="text" inputmode="decimal" formControlName="plotAreaM2"
+                     placeholder="Npr. 500" aria-describedby="plot-hint"
+                     [class.is-invalid]="fieldError('plotAreaM2')"
+                     [attr.aria-invalid]="fieldError('plotAreaM2') ? true : null" />
+              @if (fieldError('plotAreaM2'); as e) { <small class="error" role="alert">{{ e }}</small> }
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    @if (show('rooms') || show('bathrooms')) {
+      <section class="section">
+        <div class="row">
+          @if (show('rooms')) {
+            <div class="block">
+              <h3>
+                <label for="rooms">Broj soba</label>
+                @if (isOptional('rooms')) { <span class="opt">opcionalno</span> }
+              </h3>
+              <p class="hint" id="rooms-hint">Unesite broj soba</p>
+              <select id="rooms" formControlName="rooms" aria-describedby="rooms-hint"
+                      [class.is-invalid]="fieldError('rooms')"
+                      [attr.aria-invalid]="fieldError('rooms') ? true : null">
+                <option [ngValue]="null">Odaberite...</option>
+                @for (n of roomOptions; track n) { <option [ngValue]="n">{{ n }}</option> }
+              </select>
+              @if (fieldError('rooms'); as e) { <small class="error" role="alert">{{ e }}</small> }
+            </div>
+          }
+          @if (show('bathrooms')) {
+            <div class="block">
+              <h3>
+                <label for="bathrooms">Broj kupatila</label>
+                @if (isOptional('bathrooms')) { <span class="opt">opcionalno</span> }
+              </h3>
+              <p class="hint" id="bathrooms-hint">Unesite broj kupatila</p>
+              <select id="bathrooms" formControlName="bathrooms" aria-describedby="bathrooms-hint"
+                      [class.is-invalid]="fieldError('bathrooms')"
+                      [attr.aria-invalid]="fieldError('bathrooms') ? true : null">
+                <option [ngValue]="null">Odaberite...</option>
+                @for (n of bathroomOptions; track n) { <option [ngValue]="n">{{ n }}</option> }
+              </select>
+              @if (fieldError('bathrooms'); as e) { <small class="error" role="alert">{{ e }}</small> }
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    @if (show('floor') || show('totalFloors')) {
+      <section class="section">
+        <div class="row">
+          @if (show('floor')) {
+            <div class="block">
+              <h3>
+                <label for="floor">Sprat</label>
+                @if (isOptional('floor')) { <span class="opt">opcionalno</span> }
+              </h3>
+              <p class="hint" id="floor-hint">Unesite sprat na kojem se nalazi</p>
+              <select id="floor" formControlName="floor" aria-describedby="floor-hint"
+                      [class.is-invalid]="fieldError('floor')"
+                      [attr.aria-invalid]="fieldError('floor') ? true : null">
+                <option [ngValue]="null">Odaberite...</option>
+                @for (f of floorOptions; track f.value) { <option [ngValue]="f.value">{{ f.label }}</option> }
+              </select>
+              @if (fieldError('floor'); as e) { <small class="error" role="alert">{{ e }}</small> }
+            </div>
+          }
+          @if (show('totalFloors')) {
+            <div class="block">
+              <h3>
+                <label for="totalFloors">Ukupan broj spratova</label>
+                @if (isOptional('totalFloors')) { <span class="opt">opcionalno</span> }
+              </h3>
+              <p class="hint" id="total-hint">Ukupan broj spratova koje posjeduje</p>
+              <select id="totalFloors" formControlName="totalFloors" aria-describedby="total-hint"
+                      [class.is-invalid]="fieldError('totalFloors')"
+                      [attr.aria-invalid]="fieldError('totalFloors') ? true : null">
+                <option [ngValue]="null">Odaberite...</option>
+                @for (n of totalFloorOptions; track n) { <option [ngValue]="n">{{ n }}</option> }
+              </select>
+              @if (fieldError('totalFloors'); as e) { <small class="error" role="alert">{{ e }}</small> }
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    @if (show('yearBuilt')) {
+      <section class="section">
+        <div class="block block--half">
+          <h3>
+            <label for="yearBuilt">Godina izgradnje</label>
+            @if (isOptional('yearBuilt')) { <span class="opt">opcionalno</span> }
+          </h3>
+          <p class="hint" id="year-hint">Izaberite godinu gradnje</p>
+          <select id="yearBuilt" formControlName="yearBuilt" aria-describedby="year-hint"
+                  [class.is-invalid]="fieldError('yearBuilt')"
+                  [attr.aria-invalid]="fieldError('yearBuilt') ? true : null">
+            <option [ngValue]="null">Odaberite godinu...</option>
+            @for (y of yearOptions; track y) { <option [ngValue]="y">{{ y }}</option> }
+          </select>
+          @if (fieldError('yearBuilt'); as e) { <small class="error" role="alert">{{ e }}</small> }
+        </div>
+      </section>
+    }
+  </form>
+
+  <div footer>
+    <span></span>
+    <button type="submit" form="features-form" class="btn">
+      Sljedeći korak
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </button>
+  </div>
+</app-wizard-step>

@@ -1,0 +1,91 @@
+<app-wizard-step title="Lokacija" subtitle="Unesite grad i potvrdite lokaciju nekretnine">
+  <form id="location-form" [formGroup]="form" (ngSubmit)="next()" novalidate>
+    <div class="row">
+      <div class="block">
+        <h3><label for="cityId">Odaberite grad</label></h3>
+        <p class="hint" id="city-hint">U polju ispod izaberite grad gdje se nekretnina nalazi</p>
+        <select id="cityId" formControlName="cityId" aria-describedby="city-hint"
+                (change)="onCityChanged()"
+                [class.is-invalid]="fieldError('cityId')"
+                [attr.aria-invalid]="fieldError('cityId') ? true : null">
+          <option [ngValue]="null">Odaberite grad...</option>
+          @for (c of cities(); track c.id) {
+            <option [ngValue]="c.id">{{ c.name }}</option>
+          }
+        </select>
+        @if (citiesError()) {
+          <small class="error" role="alert">
+            Gradovi se nisu učitali.
+            <button type="button" class="text-btn" (click)="retryCities()">Pokušaj ponovo</button>
+          </small>
+        } @else if (fieldError('cityId'); as e) {
+          <small class="error" role="alert">{{ e }}</small>
+        }
+      </div>
+
+      <div class="block">
+        <h3><label for="address">Unesite adresu</label></h3>
+        <p class="hint" id="address-hint">Upišite tačnu lokaciju nekretnine</p>
+        <input id="address" type="text" formControlName="address" autocomplete="street-address"
+               placeholder="Unesite adresu nekretnine" aria-describedby="address-hint"
+               (keydown.enter)="locate($event)"
+               [class.is-invalid]="fieldError('address')"
+               [attr.aria-invalid]="fieldError('address') ? true : null" />
+        @if (fieldError('address'); as e) { <small class="error" role="alert">{{ e }}</small> }
+        <button type="button" class="text-btn text-btn--block" (click)="locate()" [disabled]="busy() !== null">
+          Prikaži na mapi
+        </button>
+      </div>
+    </div>
+
+    <section class="section">
+      <h3>Upišite koordinate</h3>
+      <p class="hint hint--tight" id="coords-hint">
+        Izaberite pinom lokaciju nekretnine. Koordinate su opcionalne.
+      </p>
+
+      <div class="coords">
+        <input type="text" inputmode="decimal" formControlName="latitude"
+               placeholder="Geografska širina, npr. 43.8563" aria-label="Geografska širina"
+               aria-describedby="coords-hint" (input)="coordsTyped$.next()"
+               [class.is-invalid]="coordsError()" [attr.aria-invalid]="coordsError() ? true : null" />
+        <input type="text" inputmode="decimal" formControlName="longitude"
+               placeholder="Geografska dužina, npr. 18.4131" aria-label="Geografska dužina"
+               aria-describedby="coords-hint" (input)="coordsTyped$.next()"
+               [class.is-invalid]="coordsError()" [attr.aria-invalid]="coordsError() ? true : null" />
+      </div>
+      @if (coordsError(); as e) { <small class="error" role="alert">{{ e }}</small> }
+
+      <div class="map-wrap">
+        <div #mapEl class="map" aria-label="Mapa: kliknite za odabir lokacije nekretnine"></div>
+        @if (busy(); as b) {
+          <span class="map-busy" role="status">
+            {{ b === 'reverse' ? 'Tražim adresu...' : 'Tražim na mapi...' }}
+          </span>
+        }
+      </div>
+
+      <div class="map-tools">
+        @if (note(); as n) {
+          <p class="note" [class.note--warn]="n.kind === 'warn'" role="status">{{ n.text }}</p>
+        } @else {
+          <p class="note note--muted">Kliknite na mapu da se popune grad, adresa i koordinate.</p>
+        }
+        @if (hasMarker()) {
+          <button type="button" class="text-btn" (click)="clearLocation()">Ukloni oznaku</button>
+        }
+      </div>
+    </section>
+  </form>
+
+  <div footer>
+    <span></span>
+    <button type="submit" form="location-form" class="btn">
+      Sljedeći korak
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </button>
+  </div>
+</app-wizard-step>

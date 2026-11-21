@@ -1,0 +1,130 @@
+<app-wizard-step title="Dodatne informacije i pogodnosti" subtitle="Upišite šta vaša nekretnina posjeduje">
+  <form id="details-form" [formGroup]="form" (ngSubmit)="next()" novalidate>
+    <p class="type-note">
+      Tip nekretnine: <strong>{{ typeLabel }}</strong>. Prikazana su samo polja koja se odnose na taj tip.
+    </p>
+
+    @if (show('heatingType')) {
+      <section class="section">
+        <div class="block block--field">
+          <h3>
+            <label for="heatingType">Vrsta grijanja</label>
+            @if (isOptional('heatingType')) { <span class="opt">opcionalno</span> }
+          </h3>
+          <p class="hint" id="heating-hint">Odaberite vrstu grijanja koje posjeduje</p>
+          <select id="heatingType" formControlName="heatingType" aria-describedby="heating-hint"
+                  [class.is-invalid]="fieldError('heatingType')"
+                  [attr.aria-invalid]="fieldError('heatingType') ? true : null">
+            <option [ngValue]="null">Odaberite vrstu grijanja...</option>
+            @for (o of heatingOptions; track o.value) { <option [ngValue]="o.value">{{ o.label }}</option> }
+          </select>
+          @if (fieldError('heatingType'); as e) { <small class="error" role="alert">{{ e }}</small> }
+        </div>
+      </section>
+    }
+
+    @if (show('furnishedStatus')) {
+      <section class="section">
+        <div class="block block--field">
+          <h3>
+            <label for="furnishedStatus">Namještenost</label>
+            @if (isOptional('furnishedStatus')) { <span class="opt">opcionalno</span> }
+          </h3>
+          <p class="hint" id="furnished-hint">Izaberite vrstu namještenosti vaše nekretnine</p>
+          <select id="furnishedStatus" formControlName="furnishedStatus" aria-describedby="furnished-hint"
+                  [class.is-invalid]="fieldError('furnishedStatus')"
+                  [attr.aria-invalid]="fieldError('furnishedStatus') ? true : null">
+            <option [ngValue]="null">Odaberite stanje namještenosti</option>
+            @for (o of furnishedOptions; track o.value) { <option [ngValue]="o.value">{{ o.label }}</option> }
+          </select>
+          @if (fieldError('furnishedStatus'); as e) { <small class="error" role="alert">{{ e }}</small> }
+        </div>
+      </section>
+    }
+
+    @if (show('condition')) {
+      <section class="section">
+        <div class="block block--field">
+          <h3>
+            <label for="condition">Stanje</label>
+            @if (isOptional('condition')) { <span class="opt">opcionalno</span> }
+          </h3>
+          <p class="hint" id="condition-hint">Izaberite stanje vaše nekretnine</p>
+          <select id="condition" formControlName="condition" aria-describedby="condition-hint"
+                  [class.is-invalid]="fieldError('condition')"
+                  [attr.aria-invalid]="fieldError('condition') ? true : null">
+            <option [ngValue]="null">Odaberite stanje nekretnine</option>
+            @for (o of conditionOptions; track o.value) { <option [ngValue]="o.value">{{ o.label }}</option> }
+          </select>
+          @if (fieldError('condition'); as e) { <small class="error" role="alert">{{ e }}</small> }
+        </div>
+      </section>
+    }
+
+    <section class="section">
+      <div class="block block--field">
+        <h3>
+          <span id="amenities-label">Pogodnosti</span>
+          <span class="opt">opcionalno</span>
+        </h3>
+        <p class="hint" id="amenities-hint">Odaberite pogodnosti vaše nekretnine</p>
+
+        <div class="ms" #amenityBox>
+          <button type="button" class="ms__btn" #amenityBtn
+                  aria-haspopup="true" aria-controls="amenity-panel"
+                  aria-labelledby="amenities-label" aria-describedby="amenities-hint"
+                  [attr.aria-expanded]="panelOpen()" (click)="toggleAmenityPanel()">
+            <span [class.ms__placeholder]="!selectedIds().length">{{ summary() }}</span>
+            <svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true">
+              <path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+
+          @if (panelOpen()) {
+            <div class="ms__panel" id="amenity-panel" role="group" aria-label="Pogodnosti">
+              @if (amenitiesError()) {
+                <p class="ms__msg">
+                  Pogodnosti se nisu učitale.
+                  <button type="button" class="text-btn" (click)="retryAmenities()">Pokušaj ponovo</button>
+                </p>
+              } @else if (!amenities().length) {
+                <p class="ms__msg">Učitavanje...</p>
+              } @else {
+                @for (a of amenities(); track a.id) {
+                  <label class="ms__opt">
+                    <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggleAmenity(a.id)" />
+                    <span>{{ a.name }}</span>
+                  </label>
+                }
+              }
+            </div>
+          }
+        </div>
+
+        @if (selectedAmenities().length) {
+          <ul class="chips" aria-label="Odabrane pogodnosti">
+            @for (a of selectedAmenities(); track a.id) {
+              <li class="chip">
+                {{ a.name }}
+                <button type="button" (click)="toggleAmenity(a.id)" [attr.aria-label]="'Ukloni ' + a.name">×</button>
+              </li>
+            }
+            <li><button type="button" class="text-btn" (click)="clearAmenities()">Ukloni sve</button></li>
+          </ul>
+        }
+      </div>
+    </section>
+  </form>
+
+  <div footer>
+    <span></span>
+    <button type="submit" form="details-form" class="btn">
+      Sljedeći korak
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </button>
+  </div>
+</app-wizard-step>

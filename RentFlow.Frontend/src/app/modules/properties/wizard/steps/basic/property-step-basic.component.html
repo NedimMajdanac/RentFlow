@@ -1,0 +1,50 @@
+<app-wizard-step title="Osnovne informacije" subtitle="Unesite osnovne informacije za vašu nekretninu">
+  <form id="basic-form" [formGroup]="form" (ngSubmit)="next()" novalidate>
+    <div class="row">
+      <div class="block">
+        <h3><label for="propertyType">Odaberite tip nekretnine</label></h3>
+        <p class="hint" id="type-hint">U polju ispod izaberite od ponuđenih tipova</p>
+        <select id="propertyType" formControlName="propertyType" aria-describedby="type-hint"
+                [class.is-invalid]="fieldError('propertyType')"
+                [attr.aria-invalid]="fieldError('propertyType') ? true : null">
+          <option value="">Odaberite tip...</option>
+          @for (t of typeOptions; track t.value) {
+            <option [value]="t.value">{{ t.label }}</option>
+          }
+        </select>
+        @if (fieldError('propertyType'); as e) { <small class="error" role="alert">{{ e }}</small> }
+      </div>
+
+      <div class="block">
+        <h3><label for="address">Unesite adresu</label></h3>
+        <p class="hint" id="address-hint">Upišite tačnu lokaciju nekretnine</p>
+        <input id="address" type="text" formControlName="address" autocomplete="street-address"
+               placeholder="Unesite adresu nekretnine" aria-describedby="address-hint"
+               [class.is-invalid]="fieldError('address')"
+               [attr.aria-invalid]="fieldError('address') ? true : null" />
+        @if (fieldError('address'); as e) { <small class="error" role="alert">{{ e }}</small> }
+      </div>
+    </div>
+
+    <div class="block block--wide">
+      <h3><label for="description">Dodajte opis nekretnine</label></h3>
+      <p class="hint" id="description-hint">Opišite svoju nekretninu</p>
+      <textarea id="description" rows="13" formControlName="description" aria-describedby="description-hint"
+                [class.is-invalid]="fieldError('description')"
+                [attr.aria-invalid]="fieldError('description') ? true : null"></textarea>
+      <div class="counter">{{ form.controls.description.value.length }} / 4000</div>
+      @if (fieldError('description'); as e) { <small class="error" role="alert">{{ e }}</small> }
+    </div>
+  </form>
+
+  <div footer>
+    <span></span>
+    <button type="submit" form="basic-form" class="btn">
+      Sljedeći korak
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </button>
+  </div>
+</app-wizard-step>
