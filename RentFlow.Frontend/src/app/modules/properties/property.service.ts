@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
-import { PropertyListItem, PropertyListQuery, PropertyRequest, PropertySummary } from './property.models';
+import { PropertyImage, PropertyListItem, PropertyListQuery, PropertyRequest, PropertySummary } from './property.models';
 import { PagedResult } from './property.models';
 
 @Injectable({ providedIn: 'root' })
@@ -39,5 +39,24 @@ export class PropertyService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
+  }
+
+  uploadImage(propertyId: number, file: File): Observable<PropertyImage> {
+    const form = new FormData();
+    form.append('file', file); // field name must match the IFormFile parameter on the backend
+    return this.http.post<PropertyImage>(`${this.base}/${propertyId}/images`, form);
+  }
+
+  deleteImage(propertyId: number, imageId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${propertyId}/images/${imageId}`);
+  }
+
+  setMainImage(propertyId: number, imageId: number): Observable<void> {
+    return this.http.put<void>(`${this.base}/${propertyId}/images/${imageId}/main`, {});
+  }
+
+  /** The list must contain every image of the property exactly once, in the wanted order. */
+  reorderImages(propertyId: number, imageIds: number[]): Observable<void> {
+    return this.http.put<void>(`${this.base}/${propertyId}/images/order`, { imageIds });
   }
 }
