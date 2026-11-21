@@ -10,7 +10,6 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
     {
         public async Task<GetPropertyByIdQueryDto> Handle(GetPropertyByIdQuery request, CancellationToken ct)
         {
-            // Za sada samo vlasnik ili admin. Javni prikaz ide kasnije kroz oglase (listings).
             var property = await ctx.Properties.AsNoTracking()
                 .Where(p => p.Id == request.Id && (p.OwnerId == currentUser.UserId || currentUser.IsAdmin))
                 .Select(p => new
@@ -37,8 +36,7 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
                     CreatedAtUtc = p.CreatedAtUtc
                 })
                 .FirstOrDefaultAsync(ct)
-                // TODO(starter): zamijeni exceptionom koji middleware pretvara u 404
-                ?? throw new KeyNotFoundException("Nekretnina nije pronađena.");
+                ?? throw new NotFoundException("Nekretnina nije pronađena.");
 
             var images = await ctx.PropertyImages.AsNoTracking()
                 .Where(i => i.PropertyId == property.Id && !i.IsDeleted)

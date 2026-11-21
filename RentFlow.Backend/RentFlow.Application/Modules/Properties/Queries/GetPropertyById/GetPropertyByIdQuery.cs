@@ -33,10 +33,4 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
         public required List<PropertyImageDto> Images { get; init; }
         public required List<PropertyAmenityDto> Amenities { get; init; }
     }
-
-    public sealed class PropertyAmenityDto
-    {
-        public required int Id { get; init; }
-        public required string Name { get; init; }
-    }
 }
