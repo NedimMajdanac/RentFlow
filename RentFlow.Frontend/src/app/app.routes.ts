@@ -123,16 +123,15 @@ export const routes: Routes = [
                 (m) => m.PropertyStepPhotosComponent,
               ),
           },
-
-          ...WIZARD_STEPS.slice(5).map((step, i) => ({
-            path: step.path,
-            canActivate: [wizardStepGuard(i + 2)],
-            data: { title: 'Nekretnine', stepTitle: step.title },
+          {
+            path: 'publish', // step 6
+            canActivate: [wizardStepGuard(5)],
+            data: { title: 'Nekretnine' },
             loadComponent: () =>
-              import('./modules/properties/wizard/shared/step-placeholder.component').then(
-                (m) => m.StepPlaceholderComponent,
+              import('./modules/properties/wizard/steps/publish-step/property-step-publish.component').then(
+                (m) => m.PropertyStepPublishComponent,
               ),
-          })),
+          },
         ],
       },
       {
