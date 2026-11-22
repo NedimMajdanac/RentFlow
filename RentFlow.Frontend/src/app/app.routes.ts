@@ -140,6 +140,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./modules/properties/list/my-properties.component').then((m) => m.MyPropertiesComponent),
       },
+      {
+        path: 'listings',
+        data: { title: 'Nekretnine' },
+        loadComponent: () =>
+          import('./modules/listings/browse/browse-listings.component').then((m) => m.BrowseListingsComponent),
+      },
+      {
+        path: 'listings/:id',
+        data: { title: 'Nekretnine' },
+        loadComponent: () =>
+          import('./modules/listings/details/listing-details.component').then((m) => m.ListingDetailsComponent),
+      },
 
       ...PLACEHOLDERS.map(([path, title]) => ({
         path,
