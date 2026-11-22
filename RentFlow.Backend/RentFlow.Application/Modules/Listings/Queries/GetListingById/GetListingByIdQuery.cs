@@ -21,6 +21,7 @@ namespace RentFlow.Application.Modules.Listings.Queries.GetListingById
         public required ListingStatus Status { get; init; }
         public required DateTime? PublishedAtUtc { get; init; }
         public required DateTime CreatedAtUtc { get; init; }
+        public List<OwnerListingDto> OtherListings { get; set; } = new();
 
         public required bool IsOwner { get; init; }
         public required bool IsFavorite { get; init; }
@@ -61,5 +62,16 @@ namespace RentFlow.Application.Modules.Listings.Queries.GetListingById
         public required bool IsVerified { get; init; }
         public required string? ProfileImageUrl { get; init; }
         public required DateTime MemberSinceUtc { get; init; }
+    }
+    public sealed class OwnerListingDto
+    {
+        public required int Id { get; init; }
+        public required string Title { get; init; }
+        public required ListingType ListingType { get; init; }
+        public required decimal Price { get; init; }
+        public required string CurrencyCode { get; init; }
+        public required PropertyType PropertyType { get; init; }
+        public required string CityName { get; init; }
+        public required string? MainImageUrl { get; init; }
     }
 }

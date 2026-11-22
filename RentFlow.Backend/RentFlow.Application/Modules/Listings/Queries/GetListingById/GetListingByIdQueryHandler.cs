@@ -75,6 +75,29 @@ namespace RentFlow.Application.Modules.Listings.Queries.GetListingById
                 .FirstOrDefaultAsync(ct)
                 ?? throw Problems.NotFound("Oglas nije pronađen.");
 
+            dto.OtherListings = await ctx.Listings.AsNoTracking()
+                .Where(o => o.Id != dto.Id
+                         && !o.IsDeleted
+                         && o.Property.OwnerId == dto.Owner.Id
+                         && ListingStatusRules.PublicStatuses.Contains(o.Status))
+                .OrderByDescending(o => o.PublishedAtUtc).ThenByDescending(o => o.Id)
+                .Take(10)
+                .Select(o => new OwnerListingDto
+                {
+                    Id = o.Id,
+                    Title = o.Title,
+                    ListingType = o.ListingType,
+                    Price = o.Price,
+                    CurrencyCode = o.Currency.Code,   
+                    PropertyType = o.Property.PropertyType,
+                    CityName = o.Property.City.Name,
+                    MainImageUrl = o.Property.Images
+                        .Where(i => !i.IsDeleted)
+                        .OrderByDescending(i => i.IsMain).ThenBy(i => i.SortOrder)
+                        .Select(i => i.Url).FirstOrDefault()
+                })
+                .ToListAsync(ct);
+
             return dto;
         }
     }
