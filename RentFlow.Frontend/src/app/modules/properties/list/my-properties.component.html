@@ -205,7 +205,7 @@
                 @if (openMenu() === p.id) {
                   <div class="menu__panel" role="menu">
                     <button type="button" role="menuitem" disabled>Detalji <small>uskoro</small></button>
-                    <button type="button" role="menuitem" disabled>Uredi <small>uskoro</small></button>
+                    <a role="menuitem" [routerLink]="['/my-properties', p.id]">Uredi</a>
                     <button type="button" role="menuitem" class="danger" (click)="askDelete(p)">Obriši</button>
                   </div>
                 }

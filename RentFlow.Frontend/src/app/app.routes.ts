@@ -4,6 +4,7 @@ import { myAuthGuard } from './core/guards/my-auth-guard';
 import { adminGuard } from './core/guards/admin.guard';
 import { WIZARD_STEPS } from './modules/properties/wizard/property-wizard.config';
 import { wizardStepGuard } from './modules/properties/wizard/wizard-step.guard';
+import { unsavedChangesGuard } from './core/guards/unsaved-changes.guard';
 
 const PLACEHOLDERS: [path: string, title: string][] = [
   ['dashboard', 'Pregled'],
@@ -139,6 +140,13 @@ export const routes: Routes = [
         data: { title: 'Nekretnine' },
         loadComponent: () =>
           import('./modules/properties/list/my-properties.component').then((m) => m.MyPropertiesComponent),
+      },
+      {
+        path: 'my-properties/:id',
+        canDeactivate: [unsavedChangesGuard],
+        data: { title: 'Nekretnine' },
+        loadComponent: () =>
+          import('./modules/properties/edit/property-edit.component').then((m) => m.PropertyEditComponent),
       },
       {
         path: 'listings',
