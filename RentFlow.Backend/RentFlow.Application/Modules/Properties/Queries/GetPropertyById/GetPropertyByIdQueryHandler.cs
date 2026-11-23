@@ -1,4 +1,5 @@
 ﻿using RentFlow.Application.Modules.Properties.Common;
+using RentFlow.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -50,6 +51,26 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
                 .OrderBy(a => a.Name)
                 .ToListAsync(ct);
 
+            var currentListing = await ctx.Listings.AsNoTracking()
+                .Where(l => l.PropertyId == property.Id && !l.IsDeleted && l.Status != ListingStatus.Closed)
+                .OrderByDescending(l => l.CreatedAtUtc).ThenByDescending(l => l.Id)
+                .Select(l => new PropertyListingDto
+                {
+                    Id = l.Id,
+                    ListingType = l.ListingType,
+                    Title = l.Title,
+                    Price = l.Price,
+                    CurrencyId = l.CurrencyId,
+                    CurrencyCode = l.Currency.Code,   
+                    Deposit = l.Deposit,
+                    IsNegotiable = l.IsNegotiable,
+                    Status = l.Status,
+                    PublishedAtUtc = l.PublishedAtUtc
+                })
+                .FirstOrDefaultAsync(ct);
+
+            
+
             return new GetPropertyByIdQueryDto
             {
                 Id = property.Id,
@@ -73,7 +94,8 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
                 Longitude = property.Longitude,
                 CreatedAtUtc = property.CreatedAtUtc,
                 Images = images,
-                Amenities = amenities
+                Amenities = amenities,
+                CurrentListing = currentListing
             };
         }
     }
