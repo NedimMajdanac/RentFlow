@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { PropertyImage, PropertyListItem, PropertyListQuery, PropertyRequest, PropertySummary } from './property.models';
 import { PagedResult } from './property.models';
+import { PropertyDetails } from './property-edit.models';
 
 @Injectable({ providedIn: 'root' })
 export class PropertyService {
@@ -58,5 +59,9 @@ export class PropertyService {
   /** The list must contain every image of the property exactly once, in the wanted order. */
   reorderImages(propertyId: number, imageIds: number[]): Observable<void> {
     return this.http.put<void>(`${this.base}/${propertyId}/images/order`, { imageIds });
+  }
+
+  getById(id: number): Observable<PropertyDetails> {
+    return this.http.get<PropertyDetails>(`${this.base}/${id}`);
   }
 }
