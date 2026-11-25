@@ -31,6 +31,8 @@ import { FIELD_RULES, PropertyField } from '../shared/property-field-rules';
 import { MAX_AMOUNT, decimalValidator, floorVsTotal, moneyValidator, notBlank } from '../shared/form-validators';
 import { parseDecimal, toNumberOrNull } from '../wizard/shared/parse-number';
 import { PropertyPhotosDialogComponent } from './property-photos-dialog.component';
+import { PropertyStatsComponent } from './property-stats.component';
+
 
 type TabKey = 'details' | 'price' | 'stats' | 'requests' | 'contracts';
 type DetailsField = PropertyField | 'description' | 'amenityIds';
@@ -86,7 +88,7 @@ const floorLabel = (n: number) => (n < 0 ? 'Suteren' : n === 0 ? 'Prizemlje' : `
 @Component({
   selector: 'app-property-edit',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, IconComponent, AmenityPickerComponent, PropertyPhotosDialogComponent],
+  imports: [ReactiveFormsModule, RouterLink, IconComponent, AmenityPickerComponent, PropertyPhotosDialogComponent, PropertyStatsComponent],
   templateUrl: './property-edit.component.html',
   styleUrl: './property-edit.component.css',
 })

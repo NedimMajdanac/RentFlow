@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { PropertyImage, PropertyListItem, PropertyListQuery, PropertyRequest, PropertySummary } from './property.models';
 import { PagedResult } from './property.models';
-import { PropertyDetails } from './property-edit.models';
+import { PropertyDetails, PropertyStats } from './property-edit.models';
 
 @Injectable({ providedIn: 'root' })
 export class PropertyService {
@@ -63,5 +63,9 @@ export class PropertyService {
 
   getById(id: number): Observable<PropertyDetails> {
     return this.http.get<PropertyDetails>(`${this.base}/${id}`);
+  }
+
+  stats(id: number): Observable<PropertyStats> {
+    return this.http.get<PropertyStats>(`${this.base}/${id}/stats`);
   }
 }

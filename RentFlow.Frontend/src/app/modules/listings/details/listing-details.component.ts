@@ -175,7 +175,10 @@ export class ListingDetailsComponent {
       )
       .subscribe((res) => {
         this.loading.set(false);
-        if (res) this.listing.set(res);
+        if (res) {
+            this.listing.set(res);
+            this.trackView(res);
+        }
         this.document.defaultView?.scrollTo({ top: 0 });
       });
 
@@ -314,5 +317,10 @@ export class ListingDetailsComponent {
     if (floor < 0) return 'Suteren';
     if (floor === 0) return 'Prizemlje';
     return `${floor}. sprat`;
-  }
+    }
+    /** Fire-and-forget: a failed or ignored count must never affect the page. */
+    private trackView(l: ListingDetails): void {
+        if (l.isOwner || (l.status !== 'Active' && l.status !== 'Reserved')) return;
+        this.api.recordView(l.id).subscribe({ error: () => {} });
+    }
 }

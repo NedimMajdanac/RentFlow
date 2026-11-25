@@ -50,3 +50,18 @@ export interface ListingUpdateRequest {
   deposit: number | null;
   isNegotiable: boolean;
 }
+
+/** Response of GET /api/properties/{id}/stats. */
+export interface PropertyStats {
+  totalViews: number;
+  last30DaysViews: number;
+  uniqueViewers: number;
+  /** Last 14 days, oldest first; date is "yyyy-MM-dd". */
+  viewsPerDay: { date: string; count: number }[];
+  totalRequests: number;
+  pendingRequests: number;
+  activeContracts: number;
+  totalContracts: number;
+  payments: { currencyCode: string; amount: number }[];
+  paymentsCount: number;
+}

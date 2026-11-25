@@ -65,6 +65,9 @@
 
     <div class="panel" role="tabpanel" tabindex="0" [id]="'panel-' + tab()" [attr.aria-labelledby]="'tab-' + tab()">
       @switch (tab()) {
+        @case ('stats') {
+         <app-property-stats [propertyId]="p.id" />
+        }
 
         <!-- ================= DETAILS ================= -->
         @case ('details') {

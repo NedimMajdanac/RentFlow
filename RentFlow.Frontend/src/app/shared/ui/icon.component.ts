@@ -32,6 +32,11 @@ const ICONS: Record<string, string> = {
     trash: 'M3 6h18 M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2 M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6 M10 11v6 M14 11v6',
     upload: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M17 8l-5-5-5 5 M12 3v12',
     plus: 'M12 5v14 M5 12h14',
+    eye: 'M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
+    send: 'M22 2L11 13 M22 2l-7 20-4-9-9-4z',
+    file: 'M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z M14 3v5h5 M9 13h6 M9 17h6',
+    cash: 'M2 7h20v10H2z M12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z M6 10v.01 M18 14v.01',
+    refresh: 'M21 12a9 9 0 1 1-3-6.7 M21 3v6h-6',
 };
 
 /** Picks an icon for an amenity by its name (diacritics and case are ignored). Unknown names get a check mark. */
