@@ -1,0 +1,226 @@
+<div class="page">
+  @if (loading()) {
+    <!-- loading skeleton -->
+    <div class="layout" aria-busy="true" aria-label="Učitavanje oglasa">
+      <div class="title"><div class="sk sk--line"></div><div class="sk sk--short"></div></div>
+      <div class="main"><div class="sk sk--gallery"></div><div class="sk sk--block"></div></div>
+      <div class="owner"><div class="sk sk--card"></div></div>
+    </div>
+  } @else if (error() === 'notFound') {
+    <div class="state">
+      <h1>Oglas nije pronađen</h1>
+      <p>Oglas ne postoji ili više nije dostupan.</p>
+      <a class="btn" routerLink="/listings">Nazad na pregled nekretnina</a>
+    </div>
+  } @else if (error() === 'failed') {
+    <div class="state state--error">
+      <h1>Oglas se nije mogao učitati</h1>
+      <p>Provjerite vezu i pokušajte ponovo.</p>
+      <button type="button" class="btn" (click)="retry()">Pokušaj ponovo</button>
+    </div>
+  } @else if (listing(); as l) {
+    <div class="layout">
+      <!-- TITLE -->
+      <header class="title">
+        <h1>
+          {{ l.title }}
+          @if (l.status !== 'Active') { <span class="status">{{ statusLabel(l.status) }}</span> }
+        </h1>
+        <p class="sub">{{ l.property.cityName }}, BiH · {{ typeLabel(l.property.propertyType) }}</p>
+      </header>
+
+      <!-- ACTIONS (display only for now; they are wired in the next issues) -->
+      <div class="actions">
+        <button type="button" class="ghost" aria-disabled="true" title="Uskoro">
+          <app-icon name="share" [size]="24" /> Podijeli
+        </button>
+        <button type="button" class="ghost" [class.ghost--on]="l.isFavorite" aria-disabled="true" title="Uskoro"
+                [attr.aria-pressed]="l.isFavorite">
+          <app-icon name="heart" [size]="24" [filled]="l.isFavorite" /> Sačuvaj
+        </button>
+      </div>
+
+      <!-- MAIN COLUMN -->
+      <div class="main">
+        <!-- gallery -->
+        @if (images().length) {
+          <div class="gallery" [class.gallery--one]="images().length === 1" [class.gallery--two]="images().length === 2">
+            <button type="button" class="tile tile--main" (click)="openLightbox(0, $event)"
+                    [attr.aria-label]="'Otvori fotografiju 1 od ' + images().length">
+              <img [attr.src]="media(images()[0].url)" [alt]="'Fotografija 1: ' + l.title" (error)="hideBroken($event)" />
+            </button>
+            @for (img of gallerySide(); track img.id; let i = $index) {
+              <button type="button" class="tile" (click)="openLightbox(i + 1, $event)"
+                      [attr.aria-label]="'Otvori fotografiju ' + (i + 2) + ' od ' + images().length">
+                <img [attr.src]="media(img.url)" [alt]="'Fotografija ' + (i + 2) + ': ' + l.title" loading="lazy"
+                     (error)="hideBroken($event)" />
+                @if (i === 1 && extraPhotos() > 0) { <span class="more">+{{ extraPhotos() }}</span> }
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="gallery gallery--empty">
+            <app-icon name="image" [size]="40" />
+            <span>Nema fotografija</span>
+          </div>
+        }
+
+        <!-- price -->
+        <div class="priceline">
+          <strong class="price">{{ price(l.price, l.currencyCode) }}@if (l.listingType === 'Rent') {<small> / mj.</small>}</strong>
+          <span [class]="'chip chip--' + l.listingType">{{ kindLabel(l.listingType) }}</span>
+          @if (l.isNegotiable) { <span class="chip chip--soft">Cijena po dogovoru</span> }
+          @if (l.listingType === 'Rent' && l.deposit) {
+            <span class="deposit">Depozit: {{ price(l.deposit, l.currencyCode) }}</span>
+          }
+        </div>
+
+        <!-- details card -->
+        <section class="card">
+          <span class="location-chip"><app-icon name="pin" [size]="16" /> {{ l.property.cityName }}</span>
+
+          <ul class="facts">
+            @for (f of facts(); track f.label) {
+              <li class="fact">
+                <span class="fact__icon"><app-icon [name]="f.icon" [size]="20" /></span>
+                <span class="fact__text">
+                  <small>{{ f.label }}</small>
+                  <strong>{{ f.value }}</strong>
+                </span>
+              </li>
+            }
+          </ul>
+
+          <h2 class="section">Osobine</h2>
+          <div class="specs">
+            <dl>
+              @for (r of specsLeft(); track r.label) {
+                <div class="spec"><dt>{{ r.label }}</dt><dd>{{ r.value }}</dd></div>
+              }
+            </dl>
+            <dl>
+              @for (r of specsRight(); track r.label) {
+                <div class="spec"><dt>{{ r.label }}</dt><dd>{{ r.value }}</dd></div>
+              }
+            </dl>
+          </div>
+
+          <h2 class="section">Sadržaji i pogodnosti</h2>
+          @if (amenities().length) {
+            <ul class="amenities">
+              @for (a of amenities(); track a.id) {
+                <li class="amenity"><app-icon [name]="a.icon" [size]="16" /> {{ a.name }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="muted">Vlasnik nije naveo pogodnosti.</p>
+          }
+
+          <h2 class="section">Lokacija</h2>
+          <p class="address"><app-icon name="pin" [size]="16" /> {{ l.property.address }}, {{ l.property.cityName }}</p>
+          @if (hasCoordinates()) {
+            <div #mapEl class="map" role="img" [attr.aria-label]="'Mapa: ' + l.property.address + ', ' + l.property.cityName"></div>
+          } @else {
+            <p class="muted">Tačna lokacija na mapi nije navedena.</p>
+          }
+        </section>
+
+        <!-- description -->
+        <section class="card card--text">
+          <h2 class="section section--first">Opis</h2>
+          @if (l.property.description) {
+            <p class="description">{{ l.property.description }}</p>
+          } @else {
+            <p class="muted">Vlasnik nije dodao opis.</p>
+          }
+        </section>
+
+        <!-- other listings of the same owner -->
+        @if (l.otherListings.length) {
+          <section class="card others" aria-labelledby="others-title">
+            <h2 id="others-title">Ostali oglasi korisnika</h2>
+            <div class="others__row">
+              <ul class="scroller" #scroller>
+                @for (o of l.otherListings; track o.id) {
+                  <li class="mini">
+                    <div class="mini__img" [style.background-image]="cardImage(o.mainImageUrl)"></div>
+                    <a class="mini__link" [routerLink]="['/listings', o.id]">{{ o.title }}</a>
+                    <small>{{ o.cityName }}, BiH · {{ typeLabel(o.propertyType) }}</small>
+                    <div class="mini__foot">
+                      <span [class]="'chip chip--' + o.listingType">{{ kindLabel(o.listingType) }}</span>
+                      <strong>{{ price(o.price, o.currencyCode) }}</strong>
+                    </div>
+                  </li>
+                }
+              </ul>
+              @if (l.otherListings.length > 2) {
+                <button type="button" class="next" (click)="scrollOthers()" aria-label="Prikaži sljedeće oglase">
+                  <app-icon name="arrow-right" [size]="26" />
+                </button>
+              }
+            </div>
+          </section>
+        }
+      </div>
+
+      <!-- OWNER (sticky on desktop) -->
+      <aside class="owner" aria-label="Vlasnik oglasa">
+        <div class="owner__card">
+          <div class="owner__head">
+            <span class="avatar">
+              @if (ownerAvatar(); as src) {
+                <img [attr.src]="src" [alt]="l.owner.name" (error)="hideBroken($event)" />
+              } @else {
+                {{ initials() }}
+              }
+            </span>
+            <div class="owner__info">
+              <strong class="owner__name">
+                {{ l.owner.name }}
+                @if (l.owner.isVerified) {
+                  <span class="verified" title="Verifikovan profil"><app-icon name="check" [size]="13" /></span>
+                }
+              </strong>
+              <!-- display only for now: the public profile page does not exist yet -->
+              <button type="button" class="link" aria-disabled="true" title="Uskoro">Gledaj profil</button>
+              @if (memberSince()) { <small class="muted">{{ memberSince() }}</small> }
+            </div>
+          </div>
+
+          @if (l.isOwner) {
+            <p class="owner__note">Ovo je vaš oglas.</p>
+          } @else {
+            <!-- display only for now: sending a request is a separate issue -->
+            <button type="button" class="btn btn--block" aria-disabled="true" title="Uskoro">Bukiraj</button>
+          }
+        </div>
+      </aside>
+    </div>
+
+    <!-- LIGHTBOX -->
+    @if (lightboxImage(); as img) {
+      <div class="lightbox" role="dialog" aria-modal="true" aria-label="Pregled fotografija" (click)="closeLightbox()">
+        <button type="button" id="lb-close" class="lb-btn lb-close" aria-label="Zatvori" (click)="closeLightbox()">
+          <app-icon name="close" [size]="22" />
+        </button>
+
+        @if (images().length > 1) {
+          <button type="button" class="lb-btn lb-prev" aria-label="Prethodna fotografija"
+                  (click)="step(-1); $event.stopPropagation()">
+            <app-icon name="chevron-left" [size]="26" />
+          </button>
+          <button type="button" class="lb-btn lb-next" aria-label="Sljedeća fotografija"
+                  (click)="step(1); $event.stopPropagation()">
+            <app-icon name="chevron-right" [size]="26" />
+          </button>
+        }
+
+        <figure class="lb-figure" (click)="$event.stopPropagation()">
+          <img [attr.src]="media(img.url)" [alt]="'Fotografija ' + (lightboxIndex()! + 1) + ': ' + l.title"
+               (error)="hideBroken($event)" />
+          <figcaption>{{ lightboxIndex()! + 1 }} / {{ images().length }}</figcaption>
+        </figure>
+      </div>
+    }
+  }
+</div>

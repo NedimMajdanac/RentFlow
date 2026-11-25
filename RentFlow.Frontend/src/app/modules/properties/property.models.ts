@@ -121,3 +121,26 @@ export interface PropertyListQuery {
   pageNumber: number;
   pageSize: number;
 }
+
+export const LISTING_KIND_OPTIONS: { value: ListingKind; label: string }[] = [
+  { value: 'Rent', label: 'Najam' },
+  { value: 'Sale', label: 'Prodaja' },
+];
+
+export interface ListingRequest {
+  propertyId: number;
+  listingType: ListingKind;
+  title: string;
+  price: number;
+  currencyId: number;
+  deposit: number | null;
+  isNegotiable: boolean;
+  publish: boolean;
+}
+
+export interface PropertyImage {
+  id: number;
+  url: string;
+  isMain: boolean;
+  sortOrder: number;
+}

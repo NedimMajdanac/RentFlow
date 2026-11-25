@@ -1,4 +1,5 @@
 ﻿using RentFlow.Application.Modules.Properties.Common;
+using RentFlow.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +11,6 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
     {
         public async Task<GetPropertyByIdQueryDto> Handle(GetPropertyByIdQuery request, CancellationToken ct)
         {
-            // Za sada samo vlasnik ili admin. Javni prikaz ide kasnije kroz oglase (listings).
             var property = await ctx.Properties.AsNoTracking()
                 .Where(p => p.Id == request.Id && (p.OwnerId == currentUser.UserId || currentUser.IsAdmin))
                 .Select(p => new
@@ -37,8 +37,7 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
                     CreatedAtUtc = p.CreatedAtUtc
                 })
                 .FirstOrDefaultAsync(ct)
-                // TODO(starter): zamijeni exceptionom koji middleware pretvara u 404
-                ?? throw new KeyNotFoundException("Nekretnina nije pronađena.");
+                ?? throw new NotFoundException("Nekretnina nije pronađena.");
 
             var images = await ctx.PropertyImages.AsNoTracking()
                 .Where(i => i.PropertyId == property.Id && !i.IsDeleted)
@@ -51,6 +50,26 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
                 .Select(pa => new PropertyAmenityDto { Id = pa.AmenityId, Name = pa.Amenity.Name })
                 .OrderBy(a => a.Name)
                 .ToListAsync(ct);
+
+            var currentListing = await ctx.Listings.AsNoTracking()
+                .Where(l => l.PropertyId == property.Id && !l.IsDeleted && l.Status != ListingStatus.Closed)
+                .OrderByDescending(l => l.CreatedAtUtc).ThenByDescending(l => l.Id)
+                .Select(l => new PropertyListingDto
+                {
+                    Id = l.Id,
+                    ListingType = l.ListingType,
+                    Title = l.Title,
+                    Price = l.Price,
+                    CurrencyId = l.CurrencyId,
+                    CurrencyCode = l.Currency.Code,   
+                    Deposit = l.Deposit,
+                    IsNegotiable = l.IsNegotiable,
+                    Status = l.Status,
+                    PublishedAtUtc = l.PublishedAtUtc
+                })
+                .FirstOrDefaultAsync(ct);
+
+            
 
             return new GetPropertyByIdQueryDto
             {
@@ -75,7 +94,8 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
                 Longitude = property.Longitude,
                 CreatedAtUtc = property.CreatedAtUtc,
                 Images = images,
-                Amenities = amenities
+                Amenities = amenities,
+                CurrentListing = currentListing
             };
         }
     }

@@ -29,6 +29,7 @@ public partial class DatabaseContext : DbContext, IAppDbContext
 
     public DbSet<CurrencyEntity> Currencies => Set<CurrencyEntity>();
     public DbSet<ExchangeRateEntity> ExchangeRates => Set<ExchangeRateEntity>();
+    public DbSet<ListingViewEntity> ListingViews => Set<ListingViewEntity>();
     private readonly TimeProvider _clock;
     public DatabaseContext(DbContextOptions<DatabaseContext> options, TimeProvider clock) : base(options)
     {

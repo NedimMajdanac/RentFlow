@@ -32,11 +32,19 @@ namespace RentFlow.Application.Modules.Properties.Queries.GetPropertyById
         public required DateTime CreatedAtUtc { get; init; }
         public required List<PropertyImageDto> Images { get; init; }
         public required List<PropertyAmenityDto> Amenities { get; init; }
+        public PropertyListingDto? CurrentListing { get; set; }
     }
-
-    public sealed class PropertyAmenityDto
+    public sealed class PropertyListingDto
     {
         public required int Id { get; init; }
-        public required string Name { get; init; }
+        public required ListingType ListingType { get; init; }
+        public required string Title { get; init; }
+        public required decimal Price { get; init; }
+        public required int CurrencyId { get; init; }
+        public required string CurrencyCode { get; init; }
+        public required decimal? Deposit { get; init; }
+        public required bool IsNegotiable { get; init; }
+        public required ListingStatus Status { get; init; }
+        public required DateTime? PublishedAtUtc { get; init; }
     }
 }

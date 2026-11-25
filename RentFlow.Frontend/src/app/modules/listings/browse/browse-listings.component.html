@@ -1,0 +1,259 @@
+<div class="page">
+  <header class="head">
+    <h1>Sve nekretnine</h1>
+
+    <div class="toggle" role="group" aria-label="Način prikaza">
+      <button type="button" [class.toggle--on]="view() === 'list'" [attr.aria-pressed]="view() === 'list'" (click)="setView('list')">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+        Lista
+      </button>
+      <button type="button" [class.toggle--on]="view() === 'cards'" [attr.aria-pressed]="view() === 'cards'" (click)="setView('cards')">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+        Kartice
+      </button>
+    </div>
+  </header>
+
+  <!-- FILTERS -->
+  <form class="filters" [formGroup]="filters" (ngSubmit)="$event.preventDefault()" role="search">
+    <div class="filters__row">
+      <label class="search">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+        <input type="search" formControlName="search" placeholder="Pretraži po nazivu ili lokaciji..." aria-label="Pretraga" />
+      </label>
+
+      <select formControlName="listingType" aria-label="Vrsta ponude">
+        <option value="">Sve ponude</option>
+        @for (o of kindOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+      </select>
+
+      <select formControlName="propertyType" aria-label="Vrsta nekretnine">
+        <option value="">Sve vrste</option>
+        @for (o of typeOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+      </select>
+
+      <select formControlName="sort" aria-label="Redoslijed">
+        @for (o of sortOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+      </select>
+
+      <button type="button" class="more" [attr.aria-expanded]="moreOpen()" aria-controls="more-filters"
+              (click)="moreOpen.set(!moreOpen())">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
+        Više filtera
+        @if (extraFilters() > 0) { <span class="more__badge">{{ extraFilters() }}</span> }
+      </button>
+    </div>
+
+    @if (moreOpen()) {
+      <div class="more-panel" id="more-filters">
+        <div class="field">
+          <label for="f-city">Grad</label>
+          <select id="f-city" formControlName="cityId">
+            <option [ngValue]="null">Svi gradovi</option>
+            @for (c of cities(); track c.id) { <option [ngValue]="c.id">{{ c.name }}</option> }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="f-currency">Valuta cijene</label>
+          <select id="f-currency" formControlName="currencyId">
+            @for (c of currencies(); track c.id) { <option [ngValue]="c.id">{{ c.code }}</option> }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="f-min-price">Cijena od</label>
+          <input id="f-min-price" type="text" inputmode="decimal" formControlName="minPrice" placeholder="0"
+                 [class.is-invalid]="amountError('minPrice') || rangeError('priceRange')" />
+        </div>
+        <div class="field">
+          <label for="f-max-price">Cijena do</label>
+          <input id="f-max-price" type="text" inputmode="decimal" formControlName="maxPrice" placeholder="Bez ograničenja"
+                 [class.is-invalid]="amountError('maxPrice') || rangeError('priceRange')" />
+        </div>
+        @if (amountError('minPrice') || amountError('maxPrice')) {
+          <small class="error full" role="alert">Unesite ispravan iznos.</small>
+        } @else if (rangeError('priceRange')) {
+          <small class="error full" role="alert">Najveća cijena ne može biti manja od najmanje.</small>
+        }
+
+        <div class="field">
+          <label for="f-rooms">Broj soba</label>
+          <select id="f-rooms" formControlName="minRooms">
+            <option [ngValue]="null">Svejedno</option>
+            @for (n of roomOptions; track n) { <option [ngValue]="n">{{ n }}+</option> }
+          </select>
+        </div>
+        <span class="spacer"></span>
+
+        <div class="field">
+          <label for="f-min-area">Površina od (m²)</label>
+          <input id="f-min-area" type="text" inputmode="decimal" formControlName="minArea" placeholder="0"
+                 [class.is-invalid]="amountError('minArea') || rangeError('areaRange')" />
+        </div>
+        <div class="field">
+          <label for="f-max-area">Površina do (m²)</label>
+          <input id="f-max-area" type="text" inputmode="decimal" formControlName="maxArea" placeholder="Bez ograničenja"
+                 [class.is-invalid]="amountError('maxArea') || rangeError('areaRange')" />
+        </div>
+        @if (amountError('minArea') || amountError('maxArea')) {
+          <small class="error full" role="alert">Unesite ispravnu površinu.</small>
+        } @else if (rangeError('areaRange')) {
+          <small class="error full" role="alert">Najveća površina ne može biti manja od najmanje.</small>
+        }
+
+        @if (amenities().length) {
+          <fieldset class="amenities full">
+            <legend>Pogodnosti</legend>
+            @for (a of amenities(); track a.id) {
+              <label class="check">
+                <input type="checkbox" [checked]="isAmenityOn(a.id)" (change)="toggleAmenity(a.id)" />
+                <span>{{ a.name }}</span>
+              </label>
+            }
+          </fieldset>
+        }
+      </div>
+    }
+
+    @if (usesCurrency()) {
+      <p class="note">
+        Cijene se porede u valuti <strong>{{ currencyCode() }}</strong>, pa su prikazani samo oglasi u toj valuti.
+        Valutu možete promijeniti u „Više filtera“.
+      </p>
+    }
+
+    @if (activeFilters() > 0) {
+      <div class="filters__clear">
+        <button type="button" class="text-btn" (click)="clearFilters()">Očisti filtere ({{ activeFilters() }})</button>
+      </div>
+    }
+  </form>
+
+  <!-- CONTENT -->
+  <section class="panel" [attr.aria-busy]="loading()">
+    @if (error()) {
+      <div class="state state--error">
+        <p>{{ error() }}</p>
+        <button type="button" class="btn btn--primary" (click)="retry()">Pokušaj ponovo</button>
+      </div>
+    } @else if (loading() && !items().length) {
+      <div class="state"><p>Učitavanje oglasa...</p></div>
+    } @else if (showEmptyAll()) {
+      <div class="state">
+        <h2>Trenutno nema objavljenih oglasa</h2>
+        <p>Oglasi drugih korisnika pojavit će se ovdje čim budu objavljeni.</p>
+      </div>
+    } @else if (showNoResults()) {
+      <div class="state">
+        <h2>Nema rezultata</h2>
+        <p>Nijedan oglas ne odgovara odabranim filterima.</p>
+        <button type="button" class="btn btn--light" (click)="clearFilters()">Očisti filtere</button>
+      </div>
+    } @else if (view() === 'cards') {
+      <ul class="cards" [class.is-loading]="loading()">
+        @for (l of items(); track l.id) {
+          <li class="card">
+            <div class="card__media" [style.background-image]="image(l)">
+              @if (l.status === 'Reserved') { <span class="tag">Rezervisano</span> }
+              <button type="button" class="heart" [class.heart--on]="l.isFavorite"
+                      [attr.aria-pressed]="l.isFavorite" [disabled]="isBusy(l.id)"
+                      [attr.aria-label]="(l.isFavorite ? 'Ukloni iz sačuvanih: ' : 'Sačuvaj oglas: ') + l.title"
+                      (click)="toggleFavorite(l)">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="card__body">
+              <!-- stretched link: the whole card is clickable, the heart stays above it -->
+              <a class="card__link" [routerLink]="['/listings', l.id]">{{ l.title }}</a>
+              <small>{{ l.cityName }}, BiH · {{ typeLabel(l.propertyType) }}</small>
+              <div class="card__foot">
+                <span [class]="'chip chip--' + l.listingType">{{ kindLabel(l.listingType) }}</span>
+                <strong class="price">
+                  {{ price(l) }}@if (l.listingType === 'Rent') {<small> / mj.</small>}
+                </strong>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="scroll" [class.is-loading]="loading()">
+        <table class="table">
+          <caption class="sr-only">Objavljeni oglasi</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nekretnina</th>
+              <th scope="col">Ponuda</th>
+              <th scope="col" class="col-extra">Površina</th>
+              <th scope="col" class="col-extra">Sobe</th>
+              <th scope="col">Cijena</th>
+              <th scope="col"><span class="sr-only">Sačuvaj</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (l of items(); track l.id) {
+              <tr>
+                <td>
+                  <div class="prop">
+                    <span class="thumb" [style.background-image]="image(l)"></span>
+                    <div class="prop__text">
+                      <a class="row-link" [routerLink]="['/listings', l.id]">{{ l.title }}</a>
+                      <small>{{ l.cityName }}, BiH · {{ typeLabel(l.propertyType) }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span [class]="'chip chip--' + l.listingType">{{ kindLabel(l.listingType) }}</span>
+                  @if (l.status === 'Reserved') { <span class="chip chip--Reserved">Rezervisano</span> }
+                </td>
+                <td class="col-extra">{{ l.areaM2 }} m²</td>
+                <td class="col-extra">{{ l.rooms ?? '—' }}</td>
+                <td>
+                  <strong class="price">{{ price(l) }}</strong>
+                  @if (l.listingType === 'Rent') { <small class="muted"> / mj.</small> }
+                </td>
+                <td class="col-actions">
+                  <button type="button" class="heart heart--row" [class.heart--on]="l.isFavorite"
+                          [attr.aria-pressed]="l.isFavorite" [disabled]="isBusy(l.id)"
+                          [attr.aria-label]="(l.isFavorite ? 'Ukloni iz sačuvanih: ' : 'Sačuvaj oglas: ') + l.title"
+                          (click)="toggleFavorite(l)">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z" />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (!error() && total() > 0) {
+      <footer class="pager">
+        <span class="pager__info">Prikazano {{ items().length }} od {{ total() }} nekretnina</span>
+        @if (totalPages() > 1) {
+          <nav class="pager__nav" aria-label="Stranice">
+            <button type="button" class="pg" [disabled]="page() === 1" (click)="goTo(page() - 1)" aria-label="Prethodna stranica">‹</button>
+            @for (n of pageItems(); track $index) {
+              @if (n === '…') { <span class="pg pg--gap">…</span> }
+              @else {
+                <button type="button" class="pg" [class.pg--on]="n === page()"
+                        [attr.aria-current]="n === page() ? 'page' : null" (click)="goTo(n)">{{ n }}</button>
+              }
+            }
+            <button type="button" class="pg" [disabled]="page() === totalPages()" (click)="goTo(page() + 1)" aria-label="Sljedeća stranica">›</button>
+          </nav>
+        }
+      </footer>
+    }
+  </section>
+</div>
+
+@if (toast(); as t) {
+  <div class="toast" [class.toast--error]="t.kind === 'error'" role="status" aria-live="polite">{{ t.text }}</div>
+}

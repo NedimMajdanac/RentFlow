@@ -30,5 +30,7 @@ public interface IAppDbContext
     DbSet<CurrencyEntity> Currencies { get; }
     DbSet<ExchangeRateEntity> ExchangeRates { get; }
 
+    DbSet<ListingViewEntity> ListingViews { get; }
+
     Task<int> SaveChangesAsync(CancellationToken ct);
 }

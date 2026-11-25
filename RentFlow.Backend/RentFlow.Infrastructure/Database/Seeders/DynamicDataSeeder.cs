@@ -217,6 +217,14 @@ public sealed class DynamicDataSeeder(DatabaseContext db, IPasswordHasher<UserEn
             new FavoriteEntity { User = tenant2, Listing = l5 }
         };
 
+        // A few views so the statistics tab has data: only viewers who are not the owner, spread over several days.
+        db.ListingViews.AddRange(
+            new ListingViewEntity { Listing = l1, Viewer = tenant1, CreatedAtUtc = DateTime.UtcNow.AddDays(-9) },
+            new ListingViewEntity { Listing = l1, Viewer = tenant2, CreatedAtUtc = DateTime.UtcNow.AddDays(-3) },
+            new ListingViewEntity { Listing = l1, Viewer = tenant1, CreatedAtUtc = DateTime.UtcNow.AddDays(-1) },
+            new ListingViewEntity { Listing = l3, Viewer = tenant1, CreatedAtUtc = DateTime.UtcNow.AddDays(-2) },
+            new ListingViewEntity { Listing = l2, Viewer = tenant1, CreatedAtUtc = DateTime.UtcNow.AddDays(-5) });
+
         db.Properties.AddRange(props);
         db.Listings.AddRange(l1, l2, l3, l4, l5, l6);
         db.Contracts.AddRange(c1, c2);

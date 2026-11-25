@@ -1,0 +1,172 @@
+<app-wizard-step title="Objava oglasa" subtitle="Unesi detalje oglasa i objavi svoju nekretninu">
+
+  @switch (view()) {
+    <!-- ================= FORM ================= -->
+    @case ('form') {
+      <form id="publish-form" [formGroup]="form" (ngSubmit)="submit(true)" novalidate>
+        @if (formError(); as e) { <div class="alert" role="alert">{{ e }}</div> }
+
+        <div class="row">
+          <div class="block">
+            <h3><label for="listingType">Vrsta oglasa</label></h3>
+            <p class="hint" id="kind-hint">Odaberite vrstu oglasa</p>
+            <select id="listingType" formControlName="listingType" aria-describedby="kind-hint"
+                    [class.is-invalid]="fieldError('listingType')"
+                    [attr.aria-invalid]="fieldError('listingType') ? true : null">
+              <option value="">Odaberite vrstu oglasa...</option>
+              @for (o of kindOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+            </select>
+            @if (fieldError('listingType'); as e) { <small class="error" role="alert">{{ e }}</small> }
+          </div>
+
+          <div class="block">
+            <h3><label for="title">Naziv oglasa</label></h3>
+            <p class="hint" id="title-hint">Unesite naslov oglasa</p>
+            <input id="title" type="text" formControlName="title" placeholder="Unesite naslov"
+                   aria-describedby="title-hint"
+                   [class.is-invalid]="fieldError('title')"
+                   [attr.aria-invalid]="fieldError('title') ? true : null" />
+            @if (fieldError('title'); as e) { <small class="error" role="alert">{{ e }}</small> }
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="block">
+            <h3><label for="price">Cijena</label></h3>
+            <p class="hint" id="price-hint">
+              {{ isRent() ? 'Unesite mjesečnu najamninu' : 'Unesite cijenu nekretnine' }}
+            </p>
+            <input id="price" type="text" inputmode="decimal" formControlName="price" placeholder="Unesite cijenu"
+                   aria-describedby="price-hint"
+                   [class.is-invalid]="fieldError('price')"
+                   [attr.aria-invalid]="fieldError('price') ? true : null" />
+            @if (fieldError('price'); as e) { <small class="error" role="alert">{{ e }}</small> }
+          </div>
+
+          <div class="block">
+            <h3><label for="currencyId">Valuta</label></h3>
+            <p class="hint" id="currency-hint">Odaberite podržanu valutu</p>
+            <select id="currencyId" formControlName="currencyId" aria-describedby="currency-hint"
+                    [class.is-invalid]="fieldError('currencyId')"
+                    [attr.aria-invalid]="fieldError('currencyId') ? true : null">
+              <option [ngValue]="null">Odaberite valutu...</option>
+              @for (c of currencies(); track c.id) {
+                <option [ngValue]="c.id">{{ c.code }}{{ c.name ? ' – ' + c.name : '' }}</option>
+              }
+            </select>
+            @if (currenciesError()) {
+              <small class="error" role="alert">
+                Valute se nisu učitale.
+                <button type="button" class="text-btn" (click)="retryCurrencies()">Pokušaj ponovo</button>
+              </small>
+            } @else if (fieldError('currencyId'); as e) {
+              <small class="error" role="alert">{{ e }}</small>
+            }
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="block">
+            <h3><label for="isNegotiable">Cijena po dogovoru</label></h3>
+            <p class="hint" id="negotiable-hint">Da li se može dogovoriti cijena?</p>
+            <select id="isNegotiable" formControlName="isNegotiable" aria-describedby="negotiable-hint">
+              <option [ngValue]="true">Da</option>
+              <option [ngValue]="false">Ne</option>
+            </select>
+          </div>
+
+          <div class="block">
+            <h3>
+              <label for="deposit">Deposit</label>
+              <span class="opt">opcionalno</span>
+            </h3>
+            <p class="hint" id="deposit-hint">
+              {{ isRent() ? 'Ukoliko je potreban deposit upišite u polje ispod' : 'Deposit je dostupan samo za najam' }}
+            </p>
+            <input id="deposit" type="text" inputmode="decimal" formControlName="deposit" placeholder="Unesite deposit"
+                   aria-describedby="deposit-hint"
+                   [class.is-invalid]="fieldError('deposit')"
+                   [attr.aria-invalid]="fieldError('deposit') ? true : null" />
+            @if (fieldError('deposit'); as e) { <small class="error" role="alert">{{ e }}</small> }
+          </div>
+        </div>
+      </form>
+    }
+
+    <!-- ================= PROGRESS / FAILURE ================= -->
+    @case ('progress') {
+      <section class="progress" aria-live="polite">
+        <h3>{{ running() ? 'Snimanje je u toku...' : 'Snimanje nije završeno' }}</h3>
+        @if (running()) { <p class="hint">Molimo ne zatvarajte stranicu dok se snimanje ne završi.</p> }
+
+        <ol class="steps">
+          @for (s of steps(); track s.key) {
+            <li class="pstep" [class]="'pstep pstep--' + s.state">
+              <span class="pstep__icon" aria-hidden="true">
+                @switch (s.state) {
+                  @case ('done') { ✓ }
+                  @case ('error') { ! }
+                  @case ('active') { <span class="spinner"></span> }
+                  @default { }
+                }
+              </span>
+              <span class="pstep__text">
+                {{ s.label }}
+                @if (s.detail) { <small>{{ s.detail }}</small> }
+              </span>
+            </li>
+          }
+        </ol>
+
+        @if (failure(); as f) {
+          <div class="alert" role="alert">{{ f }}</div>
+          <p class="note">Već snimljeni dijelovi se ne šalju ponovo.</p>
+        }
+      </section>
+    }
+
+    <!-- ================= SUCCESS ================= -->
+    @case ('success') {
+      <section class="success" role="status">
+        <span class="success__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10" /></svg>
+        </span>
+        <h3>{{ outcome()!.published ? 'Oglas je objavljen' : 'Nacrt oglasa je sačuvan' }}</h3>
+        <p class="success__title">„{{ outcome()!.title }}“</p>
+        <p class="hint">
+          {{ outcome()!.published
+            ? 'Vaš oglas je sada vidljiv drugim korisnicima.'
+            : 'Nacrt možete kasnije urediti i objaviti.' }}
+        </p>
+      </section>
+    }
+  }
+
+  <div footer>
+    @switch (view()) {
+      @case ('form') {
+        <button type="button" class="btn-ghost" (click)="submit(false)">Sačuvaj kao nacrt</button>
+        <button type="submit" form="publish-form" class="btn">
+          Objavi oglas
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </button>
+      }
+      @case ('progress') {
+        @if (failure()) {
+          <button type="button" class="btn-ghost" (click)="backToForm()">Nazad na izmjene</button>
+          <button type="button" class="btn" (click)="retry()">Pokušaj ponovo</button>
+        } @else {
+          <span></span>
+        }
+      }
+      @case ('success') {
+        <a class="btn-ghost" routerLink="/my-properties/new">Dodaj novu nekretninu</a>
+        <a class="btn" routerLink="/my-properties">Moje nekretnine</a>
+      }
+    }
+  </div>
+</app-wizard-step>
