@@ -10,6 +10,7 @@ using RentFlow.Application.Modules.Properties.Common;
 using RentFlow.Application.Modules.Properties.Queries.GetMyProperties;
 using RentFlow.Application.Modules.Properties.Queries.GetMyPropertiesSummary;
 using RentFlow.Application.Modules.Properties.Queries.GetPropertyById;
+using RentFlow.Application.Modules.Properties.Queries.GetPropertyStats;
 
 namespace RentFlow.API.Controllers;
 
@@ -85,4 +86,8 @@ public sealed class PropertiesController(ISender mediator) : ControllerBase
         await mediator.Send(command with { PropertyId = id }, ct);
         return NoContent();
     }
+
+    [HttpGet("{id:int}/stats")]
+    public Task<GetPropertyStatsQueryDto> GetStats(int id, CancellationToken ct)
+        => mediator.Send(new GetPropertyStatsQuery(id), ct);
 }

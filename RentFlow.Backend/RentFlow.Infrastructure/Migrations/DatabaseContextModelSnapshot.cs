@@ -892,6 +892,40 @@ namespace RentFlow.Infrastructure.Migrations
                     b.ToTable("Listings", (string)null);
                 });
 
+            modelBuilder.Entity("RentFlow.Domain.Entities.Listing.ListingViewEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ListingId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ViewerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ViewerId");
+
+                    b.HasIndex("ListingId", "CreatedAtUtc");
+
+                    b.HasIndex("ListingId", "ViewerId", "CreatedAtUtc");
+
+                    b.ToTable("ListingViews", (string)null);
+                });
+
             modelBuilder.Entity("RentFlow.Domain.Entities.Property.AmenityEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -1417,6 +1451,25 @@ namespace RentFlow.Infrastructure.Migrations
                     b.Navigation("Currency");
 
                     b.Navigation("Property");
+                });
+
+            modelBuilder.Entity("RentFlow.Domain.Entities.Listing.ListingViewEntity", b =>
+                {
+                    b.HasOne("RentFlow.Domain.Entities.Listing.ListingEntity", "Listing")
+                        .WithMany()
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RentFlow.Domain.Entities.Identity.UserEntity", "Viewer")
+                        .WithMany()
+                        .HasForeignKey("ViewerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Listing");
+
+                    b.Navigation("Viewer");
                 });
 
             modelBuilder.Entity("RentFlow.Domain.Entities.Property.PropertyAmenityEntity", b =>

@@ -3,6 +3,7 @@ using RentFlow.Application.Modules.Listings.Commands.ChangeListingStatus;
 using RentFlow.Application.Modules.Listings.Commands.CreateListing;
 using RentFlow.Application.Modules.Listings.Commands.DeleteListing;
 using RentFlow.Application.Modules.Listings.Commands.Favorites;
+using RentFlow.Application.Modules.Listings.Commands.RecordListingView;
 using RentFlow.Application.Modules.Listings.Commands.UpdateListing;
 using RentFlow.Application.Modules.Listings.Common;
 using RentFlow.Application.Modules.Listings.Queries.BrowseListings;
@@ -76,6 +77,13 @@ public sealed class ListingsController(ISender mediator) : ControllerBase
     public async Task<IActionResult> RemoveFavorite(int id, CancellationToken ct)
     {
         await mediator.Send(new RemoveFavoriteCommand(id), ct);
+        return NoContent();
+    }
+
+    [HttpPost("{id:int}/view")]
+    public async Task<IActionResult> RecordView(int id, CancellationToken ct)
+    {
+        await mediator.Send(new RecordListingViewCommand(id), ct);
         return NoContent();
     }
 }
