@@ -56,4 +56,8 @@ export class ListingService {
   removeFavorite(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}/favorite`);
   }
+  /** Counts a view of a published listing (the server ignores owners and repeat views within 24 hours). */
+  recordView(id: number): Observable<void> {
+    return this.http.post<void>(`${this.base}/${id}/view`, {});
+  }
 }
