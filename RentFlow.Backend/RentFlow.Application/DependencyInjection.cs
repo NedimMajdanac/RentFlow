@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
-using RentFlow.Application.Common.Behaviors;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using RentFlow.Application.Common.Behaviors;
+using RentFlow.Application.Modules.Listings.Common;
 using System.Reflection;
 
 namespace RentFlow.Application;
@@ -23,6 +24,9 @@ public static class DependencyInjection
 
         // TimeProvider — if used by handlers
         services.AddSingleton(TimeProvider.System);
+
+        // ListingLifecycle
+        services.AddScoped<IListingLifecycle, ListingLifecycle>();
 
         return services;
     }
