@@ -869,6 +869,12 @@ namespace RentFlow.Infrastructure.Migrations
                     b.Property<DateTime?>("PublishedAtUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -885,7 +891,7 @@ namespace RentFlow.Infrastructure.Migrations
 
                     b.HasIndex("PropertyId")
                         .IsUnique()
-                        .HasFilter("[Status] = 'Active' AND [IsDeleted] = 0");
+                        .HasFilter("[Status] <> 'Closed' AND [IsDeleted] = 0");
 
                     b.HasIndex("Status", "ListingType");
 
