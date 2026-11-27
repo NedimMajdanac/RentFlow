@@ -1,4 +1,5 @@
 ﻿using RentFlow.Application.Modules.Listings.Common;
+using RentFlow.Application.Modules.Properties.Common;
 using RentFlow.Domain.Entities.Listing;
 using RentFlow.Domain.Enums;
 using System;
@@ -18,8 +19,8 @@ namespace RentFlow.Application.Modules.Listings.Commands.CreateListing
 
             var hasOpenListing = await ctx.Listings
                 .AnyAsync(l => l.PropertyId == property.Id && !l.IsDeleted && l.Status != ListingStatus.Closed, ct);
-            if (hasOpenListing)
-                throw Problems.Invalid("propertyId", "Nekretnina već ima oglas koji nije zatvoren.");
+
+            await ctx.EnsureListingCanBeCreatedAsync(property.Id, exceptListingId: null, ct);
 
             var listing = new ListingEntity { PropertyId = property.Id };
             ListingMapper.Apply(listing, request);
@@ -35,7 +36,7 @@ namespace RentFlow.Application.Modules.Listings.Commands.CreateListing
             }
 
             ctx.Listings.Add(listing);
-            await ctx.SaveChangesAsync(ct);
+            await ctx.SaveChangesCheckedAsync(ct);
 
             return new CreateListingCommandDto { Id = listing.Id, Status = listing.Status };
         }

@@ -20,7 +20,7 @@ namespace RentFlow.Application.Modules.Listings.Commands.UpdateListing
                 throw Problems.Invalid("listingType", "Tip oglasa se može mijenjati samo dok je oglas u pripremi.");
 
             ListingMapper.Apply(listing, request);
-            await ctx.SaveChangesAsync(ct);
+            await ctx.SaveChangesCheckedAsync(ct);
         }
     }
 }
