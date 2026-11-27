@@ -11,5 +11,6 @@ namespace RentFlow.Application.Common
             => new([new ValidationFailure(field, message)]);
 
         public static NotFoundException NotFound(string message) => new(message);
+        public static ConflictException Conflict(string message) => new(message);
     }
 }
