@@ -306,6 +306,10 @@ namespace RentFlow.Infrastructure.Migrations
 
                     b.HasIndex("RequesterId");
 
+                    b.HasIndex("ListingId", "RequesterId")
+                        .IsUnique()
+                        .HasFilter("[Status] IN ('Pending', 'Accepted') AND [IsDeleted] = 0");
+
                     b.HasIndex("ListingId", "Status");
 
                     b.ToTable("Requests", (string)null);

@@ -20,5 +20,11 @@ public class RequestConfiguration : IEntityTypeConfiguration<RequestEntity>
             .HasForeignKey(x => x.RequesterId).OnDelete(DeleteBehavior.Restrict);
 
         b.HasIndex(x => new { x.ListingId, x.Status });
+        
+        // one pending or accepted request per user and listing; rejected and cancelled ones do not count,
+        // so a user may apply again after a refusal
+        b.HasIndex(x => new { x.ListingId, x.RequesterId })
+            .IsUnique()
+            .HasFilter("[Status] IN ('Pending', 'Accepted') AND [IsDeleted] = 0");
     }
 }

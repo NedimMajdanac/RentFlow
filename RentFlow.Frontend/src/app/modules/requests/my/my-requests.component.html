@@ -1,0 +1,122 @@
+<div class="page">
+  <header class="head">
+    <div>
+      <h1>Moji zahtjevi</h1>
+      <p>Pratite zahtjeve za najam i kupovinu koje ste poslali.</p>
+    </div>
+    <a class="btn" routerLink="/listings">Pregledaj nekretnine</a>
+  </header>
+
+  <div class="list-head">
+    <h2>Svi zahtjevi <span class="total">{{ total() }} ukupno</span></h2>
+  </div>
+
+  <!-- FILTERS -->
+  <form class="filters" [formGroup]="filters" (ngSubmit)="$event.preventDefault()" role="search">
+    <select formControlName="status" aria-label="Status zahtjeva">
+      <option value="">Svi statusi</option>
+      @for (o of statusOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+    </select>
+
+    <select formControlName="listingType" aria-label="Vrsta ponude">
+      <option value="">Najam i kupovina</option>
+      @for (o of kindOptions; track o.value) { <option [value]="o.value">{{ o.value === 'Rent' ? 'Najam' : 'Kupovina' }}</option> }
+    </select>
+
+    @if (activeFilters() > 0) {
+      <button type="button" class="text-btn" (click)="clearFilters()">Očisti filtere ({{ activeFilters() }})</button>
+    }
+  </form>
+
+  <!-- CONTENT -->
+  <section class="panel" [attr.aria-busy]="loading()">
+    @if (error()) {
+      <div class="state state--error">
+        <p>{{ error() }}</p>
+        <button type="button" class="btn" (click)="retry()">Pokušaj ponovo</button>
+      </div>
+    } @else if (loading() && !items().length) {
+      <div class="state"><p>Učitavanje zahtjeva...</p></div>
+    } @else if (showEmptyAll()) {
+      <div class="state">
+        <h2>Još niste poslali nijedan zahtjev</h2>
+        <p>Pronađite nekretninu i pošaljite zahtjev za najam ili kupovinu.</p>
+        <a class="btn" routerLink="/listings">Pregledaj nekretnine</a>
+      </div>
+    } @else if (showNoResults()) {
+      <div class="state">
+        <h2>Nema rezultata</h2>
+        <p>Nijedan zahtjev ne odgovara odabranim filterima.</p>
+        <button type="button" class="btn btn--light" (click)="clearFilters()">Očisti filtere</button>
+      </div>
+    } @else {
+      <ul class="list" [class.is-loading]="loading()">
+        @for (r of items(); track r.id) {
+          <li class="req">
+            <div class="req__media" [style.background-image]="image(r)"></div>
+
+            <div class="req__main">
+              <div class="req__titlerow">
+                @if (isPublic(r)) {
+                  <a class="req__title" [routerLink]="['/listings', r.listing.id]">{{ r.listing.title }}</a>
+                } @else {
+                  <span class="req__title">{{ r.listing.title }}</span>
+                }
+                <span [class]="'chip chip--' + r.listing.listingType">{{ kindLabel(r.listing.listingType) }}</span>
+              </div>
+              <small>{{ r.listing.cityName }}, BiH · {{ typeLabel(r.listing.propertyType) }} · Vlasnik: {{ r.ownerName }}</small>
+
+              <dl class="meta">
+                <div><dt>Poslano</dt><dd>{{ submitted(r) }}</dd></div>
+                @if (period(r); as p) {
+                  <div><dt>Period najma</dt><dd>{{ p }}</dd></div>
+                }
+                @if (answered(r); as a) {
+                  <div><dt>Odgovor</dt><dd>{{ a }}</dd></div>
+                }
+              </dl>
+
+              @if (r.message) {
+                <button type="button" class="text-btn" [attr.aria-expanded]="isExpanded(r.id)"
+                        [attr.aria-controls]="'msg-' + r.id" (click)="toggle(r.id)">
+                  {{ isExpanded(r.id) ? 'Sakrij poruku' : 'Prikaži poruku' }}
+                </button>
+                @if (isExpanded(r.id)) { <p class="msg" [id]="'msg-' + r.id">{{ r.message }}</p> }
+              }
+
+              @if (!isPublic(r)) {
+                <p class="gone">Oglas više nije javno objavljen.</p>
+              }
+            </div>
+
+            <div class="req__side">
+              <span [class]="'chip chip--' + r.status">{{ statusLabel(r.status) }}</span>
+              <small class="hint">{{ statusHint(r.status) }}</small>
+              @if (r.contractId) { <span class="chip chip--contract">Ugovor je kreiran</span> }
+              <strong class="price">{{ price(r) }}@if (r.listing.listingType === 'Rent') {<small> / mj.</small>}</strong>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (!error() && total() > 0) {
+      <footer class="pager">
+        <span class="pager__info">Prikazano {{ items().length }} od {{ total() }} zahtjeva</span>
+        @if (totalPages() > 1) {
+          <nav class="pager__nav" aria-label="Stranice">
+            <button type="button" class="pg" [disabled]="page() === 1" (click)="goTo(page() - 1)" aria-label="Prethodna stranica">‹</button>
+            @for (n of pageItems(); track $index) {
+              @if (n === '…') { <span class="pg pg--gap">…</span> }
+              @else {
+                <button type="button" class="pg" [class.pg--on]="n === page()"
+                        [attr.aria-current]="n === page() ? 'page' : null" (click)="goTo(n)">{{ n }}</button>
+              }
+            }
+            <button type="button" class="pg" [disabled]="page() === totalPages()" (click)="goTo(page() + 1)" aria-label="Sljedeća stranica">›</button>
+          </nav>
+        }
+      </footer>
+    }
+  </section>
+</div>

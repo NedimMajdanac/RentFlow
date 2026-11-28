@@ -176,3 +176,8 @@ ul { padding: 0; list-style: none; }
   .tile img, .mini, .next { transition: none; }
   .sk { animation: none; }
 }
+
+.cta-hint { margin-top: 12px; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center; }
+.btn--sent { background: #e3f6ec; color: #12805c; }
+.btn--sent:hover { background: #d3efe0; }
+.btn:disabled, .btn:disabled:hover { background: #c9d3ea; color: #fff; cursor: not-allowed; }

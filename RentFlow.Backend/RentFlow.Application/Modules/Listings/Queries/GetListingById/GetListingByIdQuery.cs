@@ -28,6 +28,9 @@ namespace RentFlow.Application.Modules.Listings.Queries.GetListingById
 
         public required ListingPropertyDto Property { get; init; }
         public required ListingOwnerDto Owner { get; init; }
+        
+        /// <summary>Id of the current user's pending or accepted request for this listing (null when there is none).</summary>
+        public int? MyActiveRequestId { get; init; }
     }
 
     public sealed class ListingPropertyDto
