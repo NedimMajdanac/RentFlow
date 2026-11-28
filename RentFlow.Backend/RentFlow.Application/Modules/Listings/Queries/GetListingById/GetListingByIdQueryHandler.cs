@@ -1,5 +1,6 @@
 ﻿using RentFlow.Application.Modules.Listings.Common;
 using RentFlow.Application.Modules.Properties.Common;
+using RentFlow.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,6 +33,11 @@ namespace RentFlow.Application.Modules.Listings.Queries.GetListingById
                     CreatedAtUtc = l.CreatedAtUtc,
                     IsOwner = l.Property.OwnerId == userId,
                     IsFavorite = ctx.Favorites.Any(f => f.ListingId == l.Id && f.UserId == userId && !f.IsDeleted),
+                    MyActiveRequestId = ctx.Requests
+                        .Where(r => r.ListingId == l.Id && r.RequesterId == userId && !r.IsDeleted
+                                 && (r.Status == RequestStatus.Pending || r.Status == RequestStatus.Accepted))
+                        .Select(r => (int?)r.Id)
+                        .FirstOrDefault(),
                     Property = new ListingPropertyDto
                     {
                         Id = l.Property.Id,
