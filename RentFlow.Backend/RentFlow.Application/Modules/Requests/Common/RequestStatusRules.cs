@@ -13,4 +13,12 @@ public static class RequestStatusRules
         (RequestStatus.Pending or RequestStatus.Accepted, RequestAction.Cancel) => RequestStatus.Cancelled,
         _ => null
     };
+    
+    /// <summary>
+    /// Whether the requester can still withdraw the request: pending ones always, accepted ones only while
+    /// the listing is merely reserved and no contract is active yet.
+    /// </summary>
+    public static bool CanBeCancelled(RequestStatus status, ListingStatus listingStatus, ContractStatus? liveContract) =>
+        status == RequestStatus.Pending
+        || (status == RequestStatus.Accepted && listingStatus == ListingStatus.Reserved && liveContract != ContractStatus.Active);
 }
