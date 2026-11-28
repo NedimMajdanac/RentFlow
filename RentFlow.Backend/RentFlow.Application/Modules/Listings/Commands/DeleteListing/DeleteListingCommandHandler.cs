@@ -23,7 +23,7 @@ namespace RentFlow.Application.Modules.Listings.Commands.DeleteListing
             foreach (var f in favorites) f.IsDeleted = true;
 
             listing.IsDeleted = true;
-            await ctx.SaveChangesAsync(ct);
+            await ctx.SaveChangesCheckedAsync(ct);
         }
     }
 }

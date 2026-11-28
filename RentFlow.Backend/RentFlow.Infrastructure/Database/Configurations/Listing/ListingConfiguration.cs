@@ -28,5 +28,11 @@ public class ListingConfiguration : IEntityTypeConfiguration<ListingEntity>
 
         // search index 
         b.HasIndex(x => new { x.Status, x.ListingType });
+
+        b.Property(x => x.RowVersion).IsRowVersion();
+
+        b.HasIndex(x => x.PropertyId)
+            .IsUnique()
+            .HasFilter("[Status] <> 'Closed' AND [IsDeleted] = 0");
     }
 }

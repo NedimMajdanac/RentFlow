@@ -20,6 +20,10 @@ namespace RentFlow.Application.Modules.Properties.Commands.DeleteProperty
                 throw new ConflictException(
                 "Nekretnina ima aktivan, rezervisan ili iznajmljen oglas. Prvo zatvorite oglas.");
 
+            // a sold property and a property with a contract in progress keep their history
+            if (listings.Any(l => l.Status == ListingStatus.Sold) || await ctx.LiveContracts(property.Id).AnyAsync(ct))
+                throw Problems.Invalid("property", "Nekretnina je prodana ili ima ugovor u toku i ne može se obrisati.");
+
             foreach (var draft in listings.Where(l => l.Status == ListingStatus.Draft))
                 draft.IsDeleted = true;
 

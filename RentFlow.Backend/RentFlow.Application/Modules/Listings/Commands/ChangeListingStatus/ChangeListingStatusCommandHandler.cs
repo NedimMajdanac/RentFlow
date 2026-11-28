@@ -1,4 +1,5 @@
 ﻿using RentFlow.Application.Modules.Listings.Common;
+using RentFlow.Application.Modules.Properties.Common;
 using RentFlow.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -18,16 +19,7 @@ namespace RentFlow.Application.Modules.Listings.Commands.ChangeListingStatus
                 ?? throw Problems.Invalid("status", "Ta radnja nije dozvoljena za oglas u trenutnom statusu.");
 
             if (request.Action is ListingAction.Publish or ListingAction.Reopen)
-            {
-                var another = await ctx.Listings.AnyAsync(l =>
-                    l.PropertyId == listing.PropertyId &&
-                    l.Id != listing.Id &&
-                    !l.IsDeleted &&
-                    l.Status != ListingStatus.Closed, ct);
-
-                if (another)
-                    throw Problems.Invalid("status", "Nekretnina već ima drugi oglas koji nije zatvoren.");
-            }
+                await ctx.EnsureListingCanBeCreatedAsync(listing.PropertyId, listing.Id, ct);
 
             if (request.Action == ListingAction.Publish) listing.PublishedAtUtc = now;
 
@@ -45,7 +37,7 @@ namespace RentFlow.Application.Modules.Listings.Commands.ChangeListingStatus
             }
 
             listing.Status = next;
-            await ctx.SaveChangesAsync(ct);
+            await ctx.SaveChangesCheckedAsync(ct);
 
             return new ChangeListingStatusCommandDto { Status = listing.Status };
         }

@@ -24,4 +24,7 @@ public class ListingEntity : BaseEntity
     public DateTime? PublishedAtUtc { get; set; }
 
     public ICollection<RequestEntity> Requests { get; set; } = new List<RequestEntity>();
+
+    /// <summary>Concurrency token: a second, simultaneous change of the same listing is rejected.</summary>
+    public byte[] RowVersion { get; set; } = [];
 }
