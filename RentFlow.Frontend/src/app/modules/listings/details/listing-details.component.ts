@@ -18,6 +18,8 @@ import {
 } from '../../properties/property.models';
 import { ListingDetails, ListingStatus } from '../listing.models';
 import { ListingService } from '../services/listing.service';
+import { SendRequestDialogComponent } from '../../requests/send/send-request-dialog.component';
+import { CreateRequestResult } from '../../requests/request.models';
 
 const FALLBACK_GRADIENT = 'linear-gradient(135deg, #b9cdf3, #5b7fc7)';
 const CURRENCY_LABELS: Record<string, string> = { BAM: 'KM', EUR: 'EUR' };
@@ -43,7 +45,7 @@ interface Row { label: string; value: string; }
 @Component({
   selector: 'app-listing-details',
   standalone: true,
-  imports: [RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent, SendRequestDialogComponent],
   templateUrl: './listing-details.component.html',
   styleUrl: './listing-details.component.css',
 })
@@ -157,6 +159,7 @@ export class ListingDetailsComponent {
           this.error.set(null);
           this.loading.set(true);
           this.closeLightbox();
+          this.requestOpen.set(false);
         }),
         switchMap((id) => {
           if (!Number.isInteger(id) || id <= 0) {
@@ -322,5 +325,30 @@ export class ListingDetailsComponent {
     private trackView(l: ListingDetails): void {
         if (l.isOwner || (l.status !== 'Active' && l.status !== 'Reserved')) return;
         this.api.recordView(l.id).subscribe({ error: () => {} });
-    }
+  }
+  // ---------- request dialog ----------
+readonly requestOpen = signal(false);
+
+/** What the button in the owner card does: open the form, link to my requests, or stay disabled. */
+readonly cta = computed<'open' | 'sent' | 'unavailable'>(() => {
+  const l = this.listing();
+  if (!l) return 'unavailable';
+  if (l.myActiveRequestId) return 'sent';
+  return l.status === 'Active' ? 'open' : 'unavailable';
+});
+
+readonly ctaNote = computed(() =>
+  this.listing()?.status === 'Reserved'
+    ? 'Oglas je trenutno rezervisan i ne prima nove zahtjeve.'
+    : 'Oglas trenutno nije dostupan za zahtjeve.',
+);
+
+onRequestSent(result: CreateRequestResult): void {
+  this.listing.update((l) => l && { ...l, myActiveRequestId: result.id });
+}
+
+/** Silent reload (keeps the page and the open dialog) after the server said the listing changed. */
+refreshListing(): void {
+  this.api.getById(this.currentId).subscribe({ next: (l) => this.listing.set(l), error: () => {} });
+}
 }

@@ -19,6 +19,16 @@
       <button type="button" class="btn" (click)="retry()">Pokušaj ponovo</button>
     </div>
   } @else if (listing(); as l) {
+    @if (requestOpen()) {
+  <app-send-request-dialog
+    [listingId]="l.id"
+    [listingType]="l.listingType"
+    [title]="l.title"
+    [priceText]="price(l.price, l.currencyCode) + (l.listingType === 'Rent' ? ' / mj.' : '')"
+    (sent)="onRequestSent($event)"
+    (stale)="refreshListing()"
+    (closed)="requestOpen.set(false)" />
+}
     <div class="layout">
       <!-- TITLE -->
       <header class="title">
@@ -188,11 +198,27 @@
           </div>
 
           @if (l.isOwner) {
-            <p class="owner__note">Ovo je vaš oglas.</p>
-          } @else {
-            <!-- display only for now: sending a request is a separate issue -->
-            <button type="button" class="btn btn--block" aria-disabled="true" title="Uskoro">Bukiraj</button>
-          }
+  <p class="owner__note">Ovo je vaš oglas.</p>
+} @else {
+  @switch (cta()) {
+    @case ('open') {
+      <button type="button" class="btn btn--block" (click)="requestOpen.set(true)">
+        {{ l.listingType === 'Rent' ? 'Bukiraj' : 'Pošalji zahtjev za kupovinu' }}
+      </button>
+      <p class="cta-hint">Vlasnik će pregledati vaš zahtjev i javiti vam odgovor.</p>
+    }
+    @case ('sent') {
+      <a class="btn btn--block btn--sent" routerLink="/requests">Zahtjev je poslan</a>
+      <p class="cta-hint">Status zahtjeva pratite u dijelu „Moji zahtjevi“.</p>
+    }
+    @default {
+      <button type="button" class="btn btn--block" disabled>
+        {{ l.listingType === 'Rent' ? 'Bukiraj' : 'Pošalji zahtjev za kupovinu' }}
+      </button>
+      <p class="cta-hint">{{ ctaNote() }}</p>
+    }
+  }
+}
         </div>
       </aside>
     </div>

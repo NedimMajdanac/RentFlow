@@ -66,6 +66,8 @@ export interface ListingDetails {
   property: ListingProperty;
   owner: ListingOwner;
   otherListings: OwnerListing[];
+  /** Id of my pending or accepted request for this listing (null when there is none). */
+  myActiveRequestId: number | null;
 }
 
 export interface ListingProperty {
