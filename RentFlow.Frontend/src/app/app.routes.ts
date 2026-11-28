@@ -160,6 +160,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./modules/listings/details/listing-details.component').then((m) => m.ListingDetailsComponent),
       },
+      {
+        path: 'requests',
+        data: { title: 'Moji zahtjevi' },
+        loadComponent: () =>
+          import('./modules/requests/my/my-requests.component').then((m) => m.MyRequestsComponent),
+      },
 
       ...PLACEHOLDERS.map(([path, title]) => ({
         path,
